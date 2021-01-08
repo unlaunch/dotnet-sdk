@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;net45</TargetFrameworks>
+    <RootNamespace>io.unlaunch</RootNamespace>
+	<Version>0.0.1</Version>
+  </PropertyGroup>
+  
+  <ItemGroup Condition="$(TargetFramework.StartsWith('netstandard'))">
+  
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net45'">
+    <Reference Include="System.Net.Http" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="murmurhash" Version="1.0.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="NLog" Version="4.7.6" />
+  </ItemGroup>
+
+</Project>
