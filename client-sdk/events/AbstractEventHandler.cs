@@ -62,14 +62,14 @@ namespace io.unlaunch.events
 
         public void Flush()
         {
-            CreateFlushEventsTask();
+            FlushEvent().GetAwaiter().GetResult();
         }
 
         public void Dispose()
         {
-            FlushEvent().GetAwaiter().GetResult();
-            _timer?.Dispose();
             _closed.Set(true);
+            _timer?.Dispose();
+            FlushEvent().GetAwaiter().GetResult();
         }
 
         private void CreateFlushEventsTask()
