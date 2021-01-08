@@ -67,7 +67,7 @@ namespace io.unlaunch.events
 
         public void Dispose()
         {
-            Flush();
+            FlushEvent().GetAwaiter().GetResult();
             _timer?.Dispose();
             _closed.Set(true);
         }
@@ -92,7 +92,7 @@ namespace io.unlaunch.events
                     return;
                 }
                 
-                await _restClient.Post(events);
+                await _restClient.PostAsync(events);
                 var unixTime = UnixTime.Get();
                 var lastRunTime = _lastFlushInMillis.Get() == 0 ? "never" : $"{(unixTime - _lastFlushInMillis.Get())/1000}";
                 Logger.Info($"{events.Count} event(s) submitted. Elapsed time between last run {lastRunTime} seconds ago");
@@ -110,14 +110,13 @@ namespace io.unlaunch.events
             var events = new List<UnlaunchEvent>();
             while (_queue.Any())
             {
-                UnlaunchEvent item;
-                var hasItem = _queue.TryDequeue(out item);
+                var hasItem = _queue.TryDequeue(out var item);
                 if (hasItem)
                 {
                     events.Add(item);
                 }
             }
-            
+
             return events;
         }
     }

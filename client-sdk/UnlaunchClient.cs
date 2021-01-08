@@ -148,7 +148,7 @@ namespace io.unlaunch
             if (_shutdownInitiated.Get())
             {
                 Logger.Debug($"Asked to evaluate flag {flagKey} but shutdown already initiated on the client");
-                return Constants.GetControlFeatureByName(flagKey);
+                return UnlaunchConstants.GetControlFeatureByName(flagKey);
             }
             
             var user = attributes == null ? UnlaunchUser.Create(identity) : UnlaunchUser.CreateWithAttributes(identity, attributes);
@@ -160,21 +160,21 @@ namespace io.unlaunch
             }
             catch (Exception e)
             {
-                return new UnlaunchFeature(flagKey, Constants.FlagDefaultReturnType,
+                return new UnlaunchFeature(flagKey, UnlaunchConstants.FlagDefaultReturnType,
                     null, $"there was an error fetching flag: {e.Message}");
             }        
 
             if (flag == null)
             {
                 Logger.Warn($"UnlaunchFeature '{flagKey}' not found in the data store. Returning 'control' variation");
-                return new UnlaunchFeature(flagKey, Constants.FlagDefaultReturnType, 
+                return new UnlaunchFeature(flagKey, UnlaunchConstants.FlagDefaultReturnType, 
                     null, "flag was not found in the in-memory cache");
             }
 
             var result = _evaluator.Evaluate(flag, user);
             var impression = new Impression
             {
-                type = Constants.EventTypeForImpressionEvents,
+                type = UnlaunchConstants.EventTypeForImpressionEvents,
                 key = flag.Key,
                 secondaryKey = result.GetVariation(),
                 flagKey = flag.Key,

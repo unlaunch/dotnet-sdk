@@ -55,7 +55,7 @@ namespace io.unlaunch
             }
             
             return new UnlaunchFeature(flagKey,
-                Constants.FlagDefaultReturnType,
+                UnlaunchConstants.FlagDefaultReturnType,
                 new Dictionary<string, string>(1),
                 "Client is initialized in Offline Mode. Returning 'control' variation for all flags.");
         }

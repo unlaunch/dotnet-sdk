@@ -30,7 +30,7 @@ namespace io.unlaunch
             return new UnlaunchRestWrapper(sdkKey, httpClient, baseUrl, apiPath, connectionTimeOutMs);
         }
 
-        public async Task<HttpResponseMessage> Get()
+        public async Task<HttpResponseMessage> GetAsync()
         {
             _httpClient.DefaultRequestHeaders.Remove("If-Modified-Since");
             _httpClient.DefaultRequestHeaders.Add("If-Modified-Since", _lastModified.ToString("ddd, dd MMM yyyy HH:mm:ss zzzz"));
@@ -51,7 +51,7 @@ namespace io.unlaunch
             }
         }
 
-        public async Task Post<T>(T t) where T : class
+        public async Task PostAsync<T>(T t) where T : class
         {
             var json = JsonConvert.SerializeObject(t);
             await _httpClient.PostAsync(_apiPath, new StringContent(json, Encoding.UTF8, "application/json"));

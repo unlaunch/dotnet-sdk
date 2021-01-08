@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using io.unlaunch.atomic;
-using io.unlaunch.utils;
 using NLog;
 
 namespace io.unlaunch.events
@@ -38,7 +37,7 @@ namespace io.unlaunch.events
 
         public void Dispose()
         {
-            CreateFlushEventsTask();
+            Run();
             _timer.Dispose();
             _eventHandler.Dispose();
         }
@@ -85,7 +84,7 @@ namespace io.unlaunch.events
 
                     var e = new UnlaunchEvent
                     {
-                        type = Constants.FlagInvocationsCountEventType,
+                        type = UnlaunchConstants.FlagInvocationsCountEventType,
                         key = flagKey
                     };
                     e.properties.Add(mapKey, pair.Value.Get());

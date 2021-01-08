@@ -191,7 +191,7 @@ namespace io.unlaunch
                 if (string.IsNullOrEmpty(_sdkKey))
                 {
                     // User didn't supply SDK key, try reading from environment variable
-                    var s = Environment.GetEnvironmentVariable(Constants.SdkKeyEnvVariableName);
+                    var s = Environment.GetEnvironmentVariable(UnlaunchConstants.SdkKeyEnvVariableName);
                     if (string.IsNullOrEmpty(s))
                     {
                         throw new ArgumentException("sdkKey cannot be null or empty. Must be supplied to the builder or set as an environment variable.");

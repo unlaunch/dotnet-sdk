@@ -1,6 +1,6 @@
-﻿namespace io.unlaunch.utils
+﻿namespace io.unlaunch
 {
-    public class Constants
+    public class UnlaunchConstants
     {
 
         public static readonly string SdkKeyEnvVariableName = "UNLAUNCH_SDK_KEY";

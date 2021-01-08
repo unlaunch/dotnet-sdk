@@ -98,7 +98,7 @@ namespace io.unlaunch.store
 
             try
             {
-                var response = _restWrapper.Get().GetAwaiter().GetResult();
+                var response = _restWrapper.GetAsync().GetAwaiter().GetResult();
                 Console.WriteLine("The http status code is ...: " + (int)response.StatusCode);
 
                 if (response.StatusCode == HttpStatusCode.NotModified)
