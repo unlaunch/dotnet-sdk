@@ -23,9 +23,9 @@ namespace io.unlaunch.store
         private readonly CountdownEvent _initialDownloadDoneEvent;
         private readonly AtomicBoolean _downloadSuccessful;
         private readonly IDictionary<string, FeatureFlag> _flagMap;
-        private AtomicReference<string> _projectNameRef = new AtomicReference<string>();
-        private AtomicReference<string> _environmentNameRef = new AtomicReference<string>();
-        private AtomicBoolean _isTaskRunning = new AtomicBoolean(false);
+        private readonly AtomicReference<string> _projectNameRef = new AtomicReference<string>();
+        private readonly AtomicReference<string> _environmentNameRef = new AtomicReference<string>();
+        private readonly AtomicBoolean _isTaskRunning = new AtomicBoolean(false);
         private readonly AtomicLong _numHttpCalls = new AtomicLong(0);
         private readonly Timer _timer;
 
@@ -99,8 +99,6 @@ namespace io.unlaunch.store
             try
             {
                 var response = _restWrapper.GetAsync().GetAwaiter().GetResult();
-                Console.WriteLine("The http status code is ...: " + (int)response.StatusCode);
-
                 if (response.StatusCode == HttpStatusCode.NotModified)
                 {
                     Logger.Debug("synced flags with the server. No update");

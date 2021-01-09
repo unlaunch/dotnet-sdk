@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using io.unlaunch.utils;
 
@@ -61,10 +62,11 @@ namespace io.unlaunch.engine
         {
             switch (type)
             {
-                case AttributeType.DateTime:
+                // Equals operator is not for DateTime from backend
+                case AttributeType.DateTime: 
                 {
                     var userDateTime = (DateTime) userValue.Get();
-                    return userDateTime == UnixTime.GetDateTimeUtc(long.Parse(value));
+                    return userDateTime == UnixTime.GetDateTimeUtcFromMs(long.Parse(value));
                 }
                 case AttributeType.Set:
                 {
@@ -80,7 +82,7 @@ namespace io.unlaunch.engine
                 case AttributeType.Boolean:
                 {
                     var userBoolean = (bool) userValue.Get();
-                    return userBoolean == bool.Parse(value);
+                    return userBoolean == (value.ToLower() == "true");
                 }
                 default:
                     return (string) userValue.Get() == value;
@@ -92,7 +94,7 @@ namespace io.unlaunch.engine
             if (type == AttributeType.DateTime)
             {
                 var userDateTime = (DateTime) userValue.Get();
-                return userDateTime > UnixTime.GetDateTimeUtc(long.Parse(value));
+                return userDateTime > UnixTime.GetDateTimeUtcFromMs(long.Parse(value));
             }
 
             if (type != AttributeType.Number)
@@ -109,7 +111,7 @@ namespace io.unlaunch.engine
             if (type == AttributeType.DateTime)
             {
                 var userDateTime = (DateTime) userValue.Get();
-                return userDateTime >= UnixTime.GetDateTimeUtc(long.Parse(value));
+                return userDateTime >= UnixTime.GetDateTimeUtcFromMs(long.Parse(value));
             }
 
             if (type != AttributeType.Number)

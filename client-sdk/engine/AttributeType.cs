@@ -5,6 +5,7 @@
         Boolean,
         Number,
         String,
+        Date, 
         DateTime,
         Set
     }

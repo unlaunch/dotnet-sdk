@@ -51,10 +51,7 @@ namespace io.unlaunch.model
         public int id { get; set; }
         public string key { get; set; }
         public string name { get; set; }
-        public string description { get; set; }
-        public string color { get; set; }
         public IDictionary<string, string> configs { get; set; }
-        public int order { get; set; }
         public string allowList { get; set; }
     }
     
@@ -62,7 +59,6 @@ namespace io.unlaunch.model
     {
         public int id { get; set; }
         public bool isDefault { get; set; }
-        public bool delete { get; set; }
         public IEnumerable<TargetRuleConditionDto> conditions { get; set; }
         public IEnumerable<SplitDto> splits { get; set; }
         public int priority { get; set; }
@@ -71,12 +67,10 @@ namespace io.unlaunch.model
     public class TargetRuleConditionDto
     {
         public int id { get; set; }
-        public int attributeId { get; set; }
         public string attribute { get; set; }
         public AttributeType type { get; set; }
         public string value { get; set; }
         public Operator op { get; set; }
-        public bool delete { get; set; }
     }
 
     public class SplitDto
@@ -84,6 +78,5 @@ namespace io.unlaunch.model
         public int id { get; set; }
         public int variationId { get; set; }
         public int rolloutPercentage { get; set; }
-        public bool delete { get; set; }
     }
 }

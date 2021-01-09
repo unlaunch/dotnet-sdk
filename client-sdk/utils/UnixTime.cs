@@ -10,7 +10,7 @@ namespace io.unlaunch.utils
             return (long) span.TotalMilliseconds;
         }
 
-        public static DateTime GetDateTimeUtc(long unixTimeMilliseconds)
+        public static DateTime GetDateTimeUtcFromMs(long unixTimeMilliseconds)
         {
             var dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
             return dateTime.AddMilliseconds(unixTimeMilliseconds);
