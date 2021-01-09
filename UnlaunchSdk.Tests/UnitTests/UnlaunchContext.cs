@@ -11,15 +11,15 @@ namespace UnlaunchSdk.Tests.UnitTests
 {
     public class UnlaunchContext
     {
-        public const string On = "on";
-        public const string Off = "off";
-        public const string FlagKey = "flagKey";
-        public const int OnVariationId = 368;
-        public const int OffVariationId = OnVariationId + 1;
-        
-        protected readonly FlagResponse FlagResponse;
+        private const string On = "on";
+        private const string Off = "off";
+        private const string FlagKey = "flagKey";
+        private const int OnVariationId = 368;
+        private const int OffVariationId = OnVariationId + 1;
         private IDictionary<string, FeatureFlag> _flagMap = new Dictionary<string, FeatureFlag>();
         private readonly Evaluator _evaluator = new Evaluator();
+
+        protected readonly FlagResponse FlagResponse;
 
         public UnlaunchContext()
         {
