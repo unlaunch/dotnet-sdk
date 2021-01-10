@@ -21,7 +21,7 @@ namespace UnlaunchSdk.Tests.UnitTests.engine.attribute
                 UnlaunchAttribute.NewSet(AttributeKey, new HashSet<string>(new []{"1", "6"}))
             };
 
-            OnVariation(attributes);
+            OnVariationTargetingRulesMatch(attributes);
         }
 
         [Fact]
@@ -34,7 +34,7 @@ namespace UnlaunchSdk.Tests.UnitTests.engine.attribute
                 UnlaunchAttribute.NewSet(AttributeKey, new []{"1", "6"})
             };
 
-            OnVariation(attributes);
+            OnVariationTargetingRulesMatch(attributes);
         }
 
         private void CreateEqualsCondition(AttributeType type, string userValue)

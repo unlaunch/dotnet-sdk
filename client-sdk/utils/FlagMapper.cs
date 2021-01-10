@@ -66,10 +66,10 @@ namespace io.unlaunch.utils
 
         private static List<Rule> GetRules(FlagDto flag)
         {
-            var rules = flag.rules?.Select(x => new Rule(x.isDefault, x.priority, 
+            var rules = flag.rules.Select(x => new Rule(x.isDefault, x.priority, 
                 x.conditions.Select(GetCondition), GetVariations(x.splits, flag.variations.ToList())));
 
-            return rules?.OrderBy(x => x.GetPriority()).ToList();
+            return rules.OrderBy(x => x.GetPriority()).ToList();
         }
 
         private static Condition GetCondition(TargetRuleConditionDto con)

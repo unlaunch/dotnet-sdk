@@ -53,8 +53,7 @@ namespace io.unlaunch.engine
             }
             else
             {
-                int bucketNumber = GetBucket(user.GetId(), flag.Key);
-                Console.WriteLine("bucketNumber is ....: " + bucketNumber);
+                var bucketNumber = GetBucket(user.GetId(), flag.Key);
                 foreach (var rule in flag.Rules)
                 {
                     if (!rule.IsDefault() && rule.Matches(user))
@@ -82,6 +81,19 @@ namespace io.unlaunch.engine
             return variationToServe;
         }
 
+        public int GetBucket(string userId, string featureId)
+        {
+            if (userId == null || featureId == null)
+            {
+                throw new ArgumentException("userId and featureId must not be null");
+            }
+
+            var key = userId + featureId;
+            var hash = GetHash(key);
+
+            return (int)(Math.Abs(hash % 100) + 1);
+        }
+
         private bool CheckDependencies(FeatureFlag featureFlag, UnlaunchUser user)
         {
             var prerequisiteFlags = featureFlag.PrerequisiteFlags;
@@ -101,19 +113,6 @@ namespace io.unlaunch.engine
             }
 
             return true;
-        }
-
-        private int GetBucket(string userId, string featureId)
-        {
-            if (userId == null || featureId == null)
-            {
-                throw new ArgumentException("userId and featureId must not be null");
-            }
-
-            var key = userId + featureId;
-            var hash = GetHash(key);
-
-            return (int)(Math.Abs(hash % 100) + 1);
         }
 
         private long GetHash(string key)

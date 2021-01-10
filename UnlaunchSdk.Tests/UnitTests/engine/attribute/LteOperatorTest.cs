@@ -22,7 +22,7 @@ namespace UnlaunchSdk.Tests.UnitTests.engine.attribute
                 UnlaunchAttribute.NewDateTime(AttributeKey, unixTime)
             };
 
-            OnVariation(attributes);
+            OnVariationTargetingRulesMatch(attributes);
         }
 
         [Fact]
@@ -35,7 +35,7 @@ namespace UnlaunchSdk.Tests.UnitTests.engine.attribute
                 UnlaunchAttribute.NewNumber(AttributeKey, 1.000)
             };
 
-            OnVariation(attributes);
+            OnVariationTargetingRulesMatch(attributes);
         }
 
         private void CreateEqualsCondition(AttributeType type, string userValue)

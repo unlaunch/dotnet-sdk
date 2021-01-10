@@ -20,7 +20,7 @@ namespace UnlaunchSdk.Tests.UnitTests.engine.attribute
                 UnlaunchAttribute.NewString(AttributeKey, "dotnet-sdk")
             };
 
-            OnVariation(attributes);
+            OnVariationTargetingRulesMatch(attributes);
         }
 
         private void CreateEqualsCondition(AttributeType type, string userValue)

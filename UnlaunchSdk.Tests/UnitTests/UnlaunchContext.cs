@@ -11,13 +11,13 @@ namespace UnlaunchSdk.Tests.UnitTests
 {
     public class UnlaunchContext
     {
-        private const string On = "on";
-        private const string Off = "off";
-        private const string FlagKey = "flagKey";
-        private const int OnVariationId = 368;
-        private const int OffVariationId = OnVariationId + 1;
+        protected const int OnVariationId = 368;
+        protected const int OffVariationId = OnVariationId + 1;
+        protected const string On = "on";
+        protected const string Off = "off";
+        protected const string FlagKey = "flagKey";
+        protected readonly Evaluator Evaluator = new Evaluator();
         private IDictionary<string, FeatureFlag> _flagMap = new Dictionary<string, FeatureFlag>();
-        private readonly Evaluator _evaluator = new Evaluator();
 
         protected readonly FlagResponse FlagResponse;
 
@@ -31,7 +31,7 @@ namespace UnlaunchSdk.Tests.UnitTests
             _flagMap = FlagMapper.GetFeatureFlags(FlagResponse.data.flags).ToDictionary(x => x.Key);
         }
 
-        protected UnlaunchFeature GetFeature(string identity, IEnumerable<UnlaunchAttribute> attributes, string flagKey = FlagKey)
+        protected UnlaunchFeature GetFeature(string flagKey, string identity, IEnumerable<UnlaunchAttribute> attributes)
         {
             if (!_flagMap.ContainsKey(flagKey))
             {
@@ -39,19 +39,39 @@ namespace UnlaunchSdk.Tests.UnitTests
             }
             var user = attributes == null ? UnlaunchUser.Create(identity) : UnlaunchUser.CreateWithAttributes(identity, attributes);
             
-            return _evaluator.Evaluate(_flagMap[flagKey], user);
+            return Evaluator.Evaluate(_flagMap[flagKey], user);
         }
 
-        protected void OnVariation(IEnumerable<UnlaunchAttribute> attributes)
+        protected void OnVariationTargetingRulesMatch(IEnumerable<UnlaunchAttribute> attributes, string flagKey = FlagKey, string identity = "identity")
         {
-            var feature = GetFeature("identity", attributes);
+            OnVariation(flagKey, identity, attributes, "Targeting Rule");
+        }
+
+        protected void OffVariationTargetingRulesNotMatch(IEnumerable<UnlaunchAttribute> attributes, string flagKey = FlagKey, string identity = "identity")
+        {
+            OffVariation(flagKey, identity, attributes);
+        }
+
+        protected void OnVariationUserInAllowList(string identity, string flagKey = FlagKey, IEnumerable<UnlaunchAttribute> attributes = null)
+        {
+            OnVariation(flagKey, identity, attributes, "Target User rules matched");
+        }
+
+        protected void OffVariationUserNotInAllowList(string identity, string flagKey = FlagKey, IEnumerable<UnlaunchAttribute> attributes = null)
+        {
+            OffVariation(flagKey, identity, attributes);
+        }
+
+        private void OnVariation(string flagKey, string identity, IEnumerable<UnlaunchAttribute> attributes, string evaluationReason) 
+        {
+            var feature = GetFeature(flagKey, identity, attributes);
             feature.GetVariation().Should().Be(On);
-            feature.GetEvaluationReason().Should().StartWith("Targeting Rule");
+            feature.GetEvaluationReason().Should().StartWith(evaluationReason);
         }
 
-        protected void OffVariation(IEnumerable<UnlaunchAttribute> attributes)
+        private void OffVariation(string flagKey, string identity, IEnumerable<UnlaunchAttribute> attributes)
         {
-            var feature = GetFeature("identity", attributes);
+            var feature = GetFeature(flagKey, identity, attributes);
             feature.GetVariation().Should().Be(Off);
             feature.GetEvaluationReason().Should().StartWith("Default Rule served.");
         }
@@ -97,17 +117,7 @@ namespace UnlaunchSdk.Tests.UnitTests
                             {
                                 id = 651,
                                 isDefault = false,
-                                conditions = new []
-                                {
-                                    new TargetRuleConditionDto
-                                    {
-                                        id = 119,
-                                        attribute = "attribute1",
-                                        type = AttributeType.Set,
-                                        op = Operator.EQ,
-                                        value = "value1,value2"
-                                    }
-                                },
+                                conditions = Enumerable.Empty<TargetRuleConditionDto>(),
                                 splits = new []
                                 {
                                     new SplitDto

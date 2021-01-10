@@ -30,7 +30,7 @@ namespace UnlaunchSdk.Tests.UnitTests.engine.attribute
                 UnlaunchAttribute.NewBoolean("wrongKey", true)
             };
 
-            OffVariation(attributes);
+            OffVariationTargetingRulesNotMatch(attributes);
         }
     }
 }

@@ -21,7 +21,7 @@ namespace UnlaunchSdk.Tests.UnitTests.engine.attribute
                 UnlaunchAttribute.NewBoolean(AttributeKey, true)
             };
 
-            OnVariation(attributes);
+            OnVariationTargetingRulesMatch(attributes);
         }
 
         [Fact]
@@ -35,7 +35,7 @@ namespace UnlaunchSdk.Tests.UnitTests.engine.attribute
                 UnlaunchAttribute.NewDateTime(AttributeKey, UnixTime.GetDateTimeUtcFromMs(unixTime))
             };
 
-            OnVariation(attributes);
+            OnVariationTargetingRulesMatch(attributes);
         }
 
         [Fact]
@@ -48,7 +48,7 @@ namespace UnlaunchSdk.Tests.UnitTests.engine.attribute
                 UnlaunchAttribute.NewNumber(AttributeKey, 1.000)
             };
 
-            OnVariation(attributes);
+            OnVariationTargetingRulesMatch(attributes);
         }
 
         [Fact]
@@ -62,7 +62,7 @@ namespace UnlaunchSdk.Tests.UnitTests.engine.attribute
                 UnlaunchAttribute.NewString(AttributeKey, userValue)
             };
 
-            OnVariation(attributes);
+            OnVariationTargetingRulesMatch(attributes);
         }
 
         [Fact]
@@ -75,7 +75,7 @@ namespace UnlaunchSdk.Tests.UnitTests.engine.attribute
                 UnlaunchAttribute.NewSet(AttributeKey,  new[] {"value2", "value1"})
             };
 
-            OnVariation(attributes);
+            OnVariationTargetingRulesMatch(attributes);
         }
 
         private void CreateEqualsCondition(AttributeType type, string userValue)

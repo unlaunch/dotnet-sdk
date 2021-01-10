@@ -24,7 +24,7 @@ namespace UnlaunchSdk.Tests.UnitTests.engine.attribute
 
             try
             {
-                OffVariation(attributes);
+                OffVariationTargetingRulesNotMatch(attributes);
             }
             catch (InvalidCastException e)
             {
@@ -42,7 +42,7 @@ namespace UnlaunchSdk.Tests.UnitTests.engine.attribute
                 UnlaunchAttribute.NewBoolean(AttributeKey, true)
             };
 
-            OffVariation(attributes);
+            OffVariationTargetingRulesNotMatch(attributes);
         }
 
         private void CreateConditions(Operator op)
