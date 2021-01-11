@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net45</TargetFrameworks>
+	<PackageId>unlaunch</PackageId>
     <RootNamespace>io.unlaunch</RootNamespace>
 	<Version>0.0.1</Version>
   </PropertyGroup>
