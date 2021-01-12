@@ -78,7 +78,7 @@ builder.Register(c => unlaunchClient).As<IUnlaunchClient>().SingleInstance();
 
 ## Customization
 
-You can use builder to customize the client. For more information, see the [official guide](https://docs.unlaunch.io/docs/sdks/java-sdk#configuration).
+You can use builder to customize the client. For more information, see the [official guide](https://docs.unlaunch.io/docs/sdks/dotnet-sdk).
 
 ```
 var client = UnlaunchClient.Builder()
