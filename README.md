@@ -69,8 +69,7 @@ namespace your.namespace
 }
 ```
 
-An example, how to use it in a web application
-
+### Singleton in web application
 ```
 var unlaunchClient = UnlaunchClient.Create("INSERT_YOUR_SDK_KEY");
 builder.Register(c => unlaunchClient).As<IUnlaunchClient>().SingleInstance();
