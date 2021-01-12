@@ -113,7 +113,14 @@ namespace io.unlaunch.store
                     var featureFlags = FlagMapper.GetFeatureFlags(flagResponse.data.flags);
                     foreach (var featureFlag in featureFlags)
                     {
-                        _flagMap.Add(featureFlag.Key, featureFlag);
+                        if (_flagMap.ContainsKey(featureFlag.Key))
+                        {
+                            _flagMap[featureFlag.Key] = featureFlag;
+                        }
+                        else
+                        {
+                            _flagMap.Add(featureFlag.Key, featureFlag);
+                        }
                     }
 
                     fetchedSuccessfully = true;

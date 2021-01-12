@@ -12,7 +12,7 @@ namespace io.unlaunch.events
         public object value { get; set; } = new object();
         public IDictionary<string, object> properties { get; set; } = new Dictionary<string, object>();
         public string secondaryKey { get; set; } = string.Empty;
-        public string sdk  { get; set; } = ".NET/Core";
-        public string sdkVersion { get; set; } = Environment.Version.ToString();
+        public string sdk  { get; set; } = "C#";
+        public string sdkVersion { get; set; } = "0.0.2";
     }
 }

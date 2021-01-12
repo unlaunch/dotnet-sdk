@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace io.unlaunch
 {
@@ -30,9 +31,14 @@ namespace io.unlaunch
             return _variationKey;
         }
 
-        public IDictionary<string, string> GetVariationConfigDictionary()
+        public IDictionary<string, string> GetVariationConfigAsDictionary()
         {
             return new Dictionary<string, string>(_properties);
+        }
+
+        public IDictionary<string, string> GetVariationConfig()
+        {
+            return new ReadOnlyDictionary<string, string>(_properties);
         }
 
         public string GetEvaluationReason()
