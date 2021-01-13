@@ -15,7 +15,7 @@ namespace UnlaunchSdk.Tests.UnitTests.engine.attribute
         public void DateTime()
         {
             var unixTime = UnixTime.Get();
-            CreateEqualsCondition(AttributeType.DateTime, unixTime.ToString());
+            CreateLteCondition(AttributeType.DateTime, unixTime.ToString());
 
             var attributes = new[]
             {
@@ -26,9 +26,23 @@ namespace UnlaunchSdk.Tests.UnitTests.engine.attribute
         }
 
         [Fact]
+        public void Date()
+        {
+            var unixTime = UnixTime.Get();
+            CreateLteCondition(AttributeType.Date, unixTime.ToString());
+
+            var attributes = new[]
+            {
+                UnlaunchAttribute.NewDate(AttributeKey, UnixTime.GetUtcDateTime(unixTime))
+            };
+
+            OnVariationTargetingRulesMatch(attributes);
+        }
+
+        [Fact]
         public void Number()
         {
-            CreateEqualsCondition(AttributeType.Number, "1.00");
+            CreateLteCondition(AttributeType.Number, "1.00");
 
             var attributes = new[]
             {
@@ -38,7 +52,7 @@ namespace UnlaunchSdk.Tests.UnitTests.engine.attribute
             OnVariationTargetingRulesMatch(attributes);
         }
 
-        private void CreateEqualsCondition(AttributeType type, string userValue)
+        private void CreateLteCondition(AttributeType type, string userValue)
         {
             var flag = FlagResponse.data.flags.First();
             flag.rules.First().conditions = new [] { new TargetRuleConditionDto

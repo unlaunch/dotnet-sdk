@@ -32,7 +32,21 @@ namespace UnlaunchSdk.Tests.UnitTests.engine.attribute
 
             var attributes = new[]
             {
-                UnlaunchAttribute.NewDateTime(AttributeKey, UnixTime.GetDateTimeUtcFromMs(unixTime))
+                UnlaunchAttribute.NewDateTime(AttributeKey, UnixTime.GetUtcDateTime(unixTime))
+            };
+
+            OnVariationTargetingRulesMatch(attributes);
+        }
+
+        [Fact]
+        public void Date()
+        {
+            var unixTime = UnixTime.Get();
+            CreateEqualsCondition(AttributeType.Date, unixTime.ToString());
+
+            var attributes = new[]
+            {
+                UnlaunchAttribute.NewDate(AttributeKey, UnixTime.GetUtcDateTime(unixTime))
             };
 
             OnVariationTargetingRulesMatch(attributes);

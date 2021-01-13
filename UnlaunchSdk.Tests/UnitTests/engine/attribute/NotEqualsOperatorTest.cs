@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using io.unlaunch;
 using io.unlaunch.engine;
@@ -14,7 +15,7 @@ namespace UnlaunchSdk.Tests.UnitTests.engine.attribute
         [Fact]
         public void Boolean()
         {
-            CreateEqualsCondition(AttributeType.Boolean, "false");
+            CreateNotEqualsCondition(AttributeType.Boolean, "false");
 
             var attributes = new[]
             {
@@ -28,11 +29,26 @@ namespace UnlaunchSdk.Tests.UnitTests.engine.attribute
         public void DateTime()
         {
             var unixTime = UnixTime.Get();
-            CreateEqualsCondition(AttributeType.DateTime, unixTime.ToString());
+            CreateNotEqualsCondition(AttributeType.DateTime, unixTime.ToString());
 
             var attributes = new[]
             {
-                UnlaunchAttribute.NewDateTime(AttributeKey, UnixTime.GetDateTimeUtcFromMs(unixTime - 1))
+                UnlaunchAttribute.NewDateTime(AttributeKey, UnixTime.GetUtcDateTime(unixTime - 1))
+            };
+
+            OnVariationTargetingRulesMatch(attributes);
+        }
+
+
+        [Fact]
+        public void Date()
+        {
+            var unixTime = UnixTime.Get();
+            CreateNotEqualsCondition(AttributeType.Date, unixTime.ToString());
+
+            var attributes = new[]
+            {
+                UnlaunchAttribute.NewDate(AttributeKey, UnixTime.GetUtcDateTime(unixTime).AddDays(-1))
             };
 
             OnVariationTargetingRulesMatch(attributes);
@@ -41,7 +57,7 @@ namespace UnlaunchSdk.Tests.UnitTests.engine.attribute
         [Fact]
         public void Number()
         {
-            CreateEqualsCondition(AttributeType.Number, "1.0001");
+            CreateNotEqualsCondition(AttributeType.Number, "1.0001");
 
             var attributes = new[]
             {
@@ -55,7 +71,7 @@ namespace UnlaunchSdk.Tests.UnitTests.engine.attribute
         public void String()
         {
             var userValue = "dotnet-sdk";
-            CreateEqualsCondition(AttributeType.String, userValue);
+            CreateNotEqualsCondition(AttributeType.String, userValue);
 
             var attributes = new[]
             {
@@ -66,9 +82,9 @@ namespace UnlaunchSdk.Tests.UnitTests.engine.attribute
         }
 
         [Fact]
-        public void Set()
+        public void Set_userSet_is_not_same()
         {
-            CreateEqualsCondition(AttributeType.Set, "value1,value3");
+            CreateNotEqualsCondition(AttributeType.Set, "value1,value3");
 
             var attributes = new[]
             {
@@ -78,7 +94,33 @@ namespace UnlaunchSdk.Tests.UnitTests.engine.attribute
             OnVariationTargetingRulesMatch(attributes);
         }
 
-        private void CreateEqualsCondition(AttributeType type, string userValue)
+        [Fact]
+        public void Set_userSet_is_super_set()
+        {
+            CreateNotEqualsCondition(AttributeType.Set, "value1,value3,value2");
+
+            var attributes = new[]
+            {
+                UnlaunchAttribute.NewSet(AttributeKey,  new[] {"value2", "value1"})
+            };
+
+            OnVariationTargetingRulesMatch(attributes);
+        }
+
+        [Fact]
+        public void Set_userSet_is_sub_set()
+        {
+            CreateNotEqualsCondition(AttributeType.Set, "value1");
+
+            var attributes = new[]
+            {
+                UnlaunchAttribute.NewSet(AttributeKey,  new[] {"value2", "value1"})
+            };
+
+            OnVariationTargetingRulesMatch(attributes);
+        }
+
+        private void CreateNotEqualsCondition(AttributeType type, string userValue)
         {
             var flag = FlagResponse.data.flags.First();
             flag.rules.First().conditions = new [] { new TargetRuleConditionDto

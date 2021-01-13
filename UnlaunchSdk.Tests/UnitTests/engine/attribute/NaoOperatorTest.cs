@@ -14,7 +14,7 @@ namespace UnlaunchSdk.Tests.UnitTests.engine.attribute
         [Fact]
         public void Set()
         {
-            CreateEqualsCondition(AttributeType.Set, "2,3,6,8");
+            CreateNotAllOfCondition(AttributeType.Set, "2,3,6,8");
 
             var attributes = new[]
             {
@@ -27,7 +27,7 @@ namespace UnlaunchSdk.Tests.UnitTests.engine.attribute
         [Fact]
         public void Enumerable()
         {
-            CreateEqualsCondition(AttributeType.Set, "2,1,3,9");
+            CreateNotAllOfCondition(AttributeType.Set, "2,1,3,9");
 
             var attributes = new[]
             {
@@ -37,7 +37,7 @@ namespace UnlaunchSdk.Tests.UnitTests.engine.attribute
             OnVariationTargetingRulesMatch(attributes);
         }
 
-        private void CreateEqualsCondition(AttributeType type, string userValue)
+        private void CreateNotAllOfCondition(AttributeType type, string userValue)
         {
             var flag = FlagResponse.data.flags.First();
             flag.rules.First().conditions = new [] { new TargetRuleConditionDto
