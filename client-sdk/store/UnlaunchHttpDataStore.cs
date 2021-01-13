@@ -11,13 +11,12 @@ using io.unlaunch.exception;
 using io.unlaunch.model;
 using io.unlaunch.utils;
 using Newtonsoft.Json;
-using NLog;
 
 namespace io.unlaunch.store
 {
-    sealed class UnlaunchHttpDataStore : UnlaunchDataStore
+    sealed class UnlaunchHttpDataStore : IUnlaunchDataStore
     {
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        private static readonly IUnlaunchLogger Logger = LoggerProvider.For<UnlaunchHttpDataStore>();
 
         private readonly UnlaunchRestWrapper _restWrapper;
         private readonly CountdownEvent _initialDownloadDoneEvent;
@@ -140,11 +139,11 @@ namespace io.unlaunch.store
             }
             catch (UnlaunchHttpException e)
             {
-                Logger.Warn($"unable to fetch flags using REST API, {e.Message}");
+                Logger.Warn("unable to fetch flags using REST API", e);
             }
             catch (Exception e)
             {
-                Logger.Warn($"an error occurred when fetching flags using the REST API, {e.Message}");
+                Logger.Warn("an error occurred when fetching flags using the REST API", e);
             }
 
             if (fetchedSuccessfully && !_downloadSuccessful.Get())

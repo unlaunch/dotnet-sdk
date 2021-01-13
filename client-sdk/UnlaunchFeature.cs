@@ -36,9 +36,9 @@ namespace io.unlaunch
             return new Dictionary<string, string>(_properties);
         }
 
-        public IDictionary<string, string> GetVariationConfig()
+        public IUnlaunchDynamicConfig GetVariationConfig()
         {
-            return new ReadOnlyDictionary<string, string>(_properties);
+            return new DefaultUnlaunchDynamicConfig(new ReadOnlyDictionary<string, string>(_properties));
         }
 
         public string GetEvaluationReason()

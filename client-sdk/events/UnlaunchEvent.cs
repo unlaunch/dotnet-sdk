@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using io.unlaunch.utils;
 
 namespace io.unlaunch.events

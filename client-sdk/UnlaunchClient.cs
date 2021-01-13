@@ -6,25 +6,23 @@ using io.unlaunch.atomic;
 using io.unlaunch.engine;
 using io.unlaunch.events;
 using io.unlaunch.store;
-using io.unlaunch.utils;
-using NLog;
 
 namespace io.unlaunch
 {
     public class UnlaunchClient : IUnlaunchClient
     {
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        private static readonly IUnlaunchLogger Logger = LoggerProvider.For<UnlaunchClient>();
 
         protected readonly IEventHandler _defaultEventHandler;
         private readonly IEventHandler _flagInvocationMetricHandler;
         private readonly IEventHandler _impressionsEventHandler;
-        private readonly UnlaunchDataStore _dataStore;
+        private readonly IUnlaunchDataStore _dataStore;
         private readonly Evaluator _evaluator = new Evaluator();
         private readonly AtomicBoolean _shutdownInitiated = new AtomicBoolean(false);
         private readonly CountdownEvent _initialDownloadDoneEvent;
         private readonly AtomicBoolean _downloadSuccessful;
 
-        private UnlaunchClient(UnlaunchDataStore dataStore,
+        private UnlaunchClient(IUnlaunchDataStore dataStore,
             IEventHandler eventHandler,
             IEventHandler flagInvocationMetricHandler,
             IEventHandler impressionsEventHandler,
@@ -39,7 +37,7 @@ namespace io.unlaunch
             _downloadSuccessful = downloadSuccessful;
         }
 
-        public static IUnlaunchClient Create(UnlaunchDataStore dataStore,
+        public static IUnlaunchClient Create(IUnlaunchDataStore dataStore,
             IEventHandler eventHandler,
             IEventHandler flagInvocationMetricHandler,
             IEventHandler impressionsEventHandler,

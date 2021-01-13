@@ -5,14 +5,13 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using io.unlaunch.atomic;
-using NLog;
 
 namespace io.unlaunch.events
 {
     public class CountAggregatorEventHandler : IEventHandler
     {
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-        
+        private static readonly IUnlaunchLogger Logger = LoggerProvider.For<CountAggregatorEventHandler>();
+
         private readonly IDictionary<string, AtomicLong> _variationsCountMap = new ConcurrentDictionary<string, AtomicLong>();
         private readonly IEventHandler _eventHandler;
         private readonly Timer _timer;
@@ -96,7 +95,7 @@ namespace io.unlaunch.events
                     }
                     catch (Exception ex)
                     {
-                        Logger.Error($"An error occurred sending event counts to the service, {ex.Message}");
+                        Logger.Error("An error occurred sending event counts to the service", ex);
                     }
                 }
             }

@@ -3,7 +3,7 @@ using io.unlaunch.engine;
 
 namespace io.unlaunch.store
 {
-    public class UnlaunchNoOpDataStore : UnlaunchDataStore
+    public class UnlaunchNoOpDataStore : IUnlaunchDataStore
     {
         public FeatureFlag GetFlag(string flagKey)
         {

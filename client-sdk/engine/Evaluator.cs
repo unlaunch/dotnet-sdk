@@ -3,13 +3,12 @@ using System.Linq;
 using System.Text;
 using io.unlaunch.atomic;
 using Murmur;
-using NLog;
 
 namespace io.unlaunch.engine
 {
     public class Evaluator
     {
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        private static readonly IUnlaunchLogger Logger = LoggerProvider.For<Evaluator>();
 
         public UnlaunchFeature Evaluate(FeatureFlag flag, UnlaunchUser user)
         {

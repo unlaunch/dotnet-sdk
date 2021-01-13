@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using io.unlaunch.exception;
 using Newtonsoft.Json;
-using NLog;
 
 namespace io.unlaunch
 {
@@ -15,7 +14,7 @@ namespace io.unlaunch
         private readonly string _apiPath;
         private DateTime _lastModified;
 
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        private static readonly IUnlaunchLogger Logger = LoggerProvider.For<UnlaunchRestWrapper>();
 
         UnlaunchRestWrapper(string sdkKey, HttpClient httpClient, string baseUrl, string apiPath, int connectionTimeOutMs)
         {
@@ -46,7 +45,7 @@ namespace io.unlaunch
             }
             catch (TaskCanceledException tce)
             {
-                Logger.Error($"Task took too long to complete, {tce.Message}");
+                Logger.Error("Task took too long to complete", tce);
                 throw new UnlaunchHttpException(tce.Message);
             }
         }

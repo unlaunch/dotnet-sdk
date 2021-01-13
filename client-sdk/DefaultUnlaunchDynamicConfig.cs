@@ -3,11 +3,11 @@ using System.Linq;
 
 namespace io.unlaunch
 {
-    class DefaultUnlaunchDynamicConfig : UnlaunchDynamicConfig
+    class DefaultUnlaunchDynamicConfig : IUnlaunchDynamicConfig
     {
         private readonly IDictionary<string, string> _configMap;
 
-        DefaultUnlaunchDynamicConfig(IDictionary<string, string> configMap)
+        public DefaultUnlaunchDynamicConfig(IDictionary<string, string> configMap)
         {
             _configMap = configMap ?? new Dictionary<string, string>(1);
         }

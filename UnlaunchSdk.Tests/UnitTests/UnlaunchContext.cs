@@ -117,7 +117,14 @@ namespace UnlaunchSdk.Tests.UnitTests
                             {
                                 id = 651,
                                 isDefault = false,
-                                conditions = Enumerable.Empty<TargetRuleConditionDto>(),
+                                conditions = new [] { new TargetRuleConditionDto
+                                {
+                                    id = 119,
+                                    attribute = "attributeKey",
+                                    type = AttributeType.Set,
+                                    op = Operator.CON,
+                                    value = "userValue"
+                                }},
                                 splits = new []
                                 {
                                     new SplitDto

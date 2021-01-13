@@ -6,13 +6,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using io.unlaunch.atomic;
 using io.unlaunch.utils;
-using NLog;
 
 namespace io.unlaunch.events
 {
     public class AbstractEventHandler : IEventHandler
     {
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        private static readonly IUnlaunchLogger Logger = LoggerProvider.For<AbstractEventHandler>();
 
         private readonly ConcurrentQueue<UnlaunchEvent> _queue = new ConcurrentQueue<UnlaunchEvent>();
         private readonly UnlaunchRestWrapper _restClient;
@@ -101,7 +100,7 @@ namespace io.unlaunch.events
             }
             catch (Exception e)
             {
-                Logger.Error($"There was an error submitting events to Unlaunch servers, {e.Message}");
+                Logger.Error("There was an error submitting events to Unlaunch servers", e);
             }
         }
 

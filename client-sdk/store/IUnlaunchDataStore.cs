@@ -4,7 +4,7 @@ using io.unlaunch.engine;
 
 namespace io.unlaunch.store
 {
-    public interface UnlaunchDataStore : IDisposable
+    public interface IUnlaunchDataStore : IDisposable
     {
         FeatureFlag GetFlag(string flagKey);
         IEnumerable<FeatureFlag> GetAllFlags();

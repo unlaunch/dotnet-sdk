@@ -1,6 +1,6 @@
 ﻿namespace io.unlaunch
 {
-    interface UnlaunchDynamicConfig
+    public interface IUnlaunchDynamicConfig
     {
         bool ContainsKey(string key);
 

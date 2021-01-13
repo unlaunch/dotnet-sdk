@@ -23,7 +23,7 @@ namespace io.unlaunch.store
             _downloadSuccessful = downloadSuccessful;
         }
         
-        public UnlaunchDataStore GetDataStore()
+        public IUnlaunchDataStore GetDataStore()
         {
             if (_refreshableUnlaunchFetcherRef.Get() != null)
             {
@@ -36,7 +36,7 @@ namespace io.unlaunch.store
             return dataStore;
         }
 
-        public UnlaunchDataStore GetNoOpDataStore()
+        public IUnlaunchDataStore GetNoOpDataStore()
         {
             return new UnlaunchNoOpDataStore();
         }

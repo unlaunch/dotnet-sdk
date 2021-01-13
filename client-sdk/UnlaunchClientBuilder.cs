@@ -4,14 +4,12 @@ using System.Threading;
 using io.unlaunch.atomic;
 using io.unlaunch.events;
 using io.unlaunch.store;
-using io.unlaunch.utils;
-using NLog;
 
 namespace io.unlaunch
 {
     public class UnlaunchClientBuilder : IUnlaunchClientBuilder
     {
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        private static readonly IUnlaunchLogger Logger = LoggerProvider.For<UnlaunchClientBuilder>();
 
         private string _sdkKey;
         private bool _isOffline;
