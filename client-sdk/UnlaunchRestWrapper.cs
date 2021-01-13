@@ -32,7 +32,7 @@ namespace io.unlaunch
         public async Task<HttpResponseMessage> GetAsync()
         {
             _httpClient.DefaultRequestHeaders.Remove("If-Modified-Since");
-            _httpClient.DefaultRequestHeaders.Add("If-Modified-Since", _lastModified.ToString("ddd, dd MMM yyyy HH:mm:ss zzzz"));
+            _httpClient.DefaultRequestHeaders.Add("If-Modified-Since", _lastModified.ToUniversalTime().ToString("r"));
             try
             {
                 var response = await _httpClient.GetAsync(_apiPath);
