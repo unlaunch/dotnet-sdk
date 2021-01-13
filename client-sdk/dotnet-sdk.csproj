@@ -8,6 +8,10 @@
 	<Version>0.0.2</Version>
   </PropertyGroup>
   
+  <PropertyGroup>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+  </PropertyGroup>
+  
   <PropertyGroup Condition="'$(TargetFramework)' == 'net45'">
     <DefineConstants>NET45</DefineConstants>
   </PropertyGroup>
