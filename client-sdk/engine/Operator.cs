@@ -16,8 +16,8 @@
         NEW,    // not endsWith
         PO,     // part of
         NPO,    // not part of
-        HA,     // has all
-        NHA,    // not has all
+        HA,     // has any of
+        NHA,    // does not has any of
         AO,     // has all of
         NAO     // does not have all of
     }

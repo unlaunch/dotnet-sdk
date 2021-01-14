@@ -61,11 +61,15 @@ namespace io.unlaunch.engine
         {
             switch (type)
             {
-                // Equals operator is not for DateTime from backend
                 case AttributeType.DateTime: 
                 {
                     var userDateTime = (DateTime) userValue.Get();
-                    return userDateTime == UnixTime.GetDateTimeUtcFromMs(long.Parse(value));
+                    return userDateTime == UnixTime.GetUtcDateTime(long.Parse(value));
+                }
+                case AttributeType.Date:
+                {
+                    var userDateTime = (DateTime)userValue.Get();
+                    return userDateTime.Date == UnixTime.GetUtcDateTime(long.Parse(value)).Date;
                 }
                 case AttributeType.Set:
                 {
@@ -93,7 +97,13 @@ namespace io.unlaunch.engine
             if (type == AttributeType.DateTime)
             {
                 var userDateTime = (DateTime) userValue.Get();
-                return userDateTime > UnixTime.GetDateTimeUtcFromMs(long.Parse(value));
+                return userDateTime > UnixTime.GetUtcDateTime(long.Parse(value));
+            }
+
+            if (type == AttributeType.Date)
+            {
+                var userDateTime = (DateTime)userValue.Get();
+                return userDateTime.Date > UnixTime.GetUtcDateTime(long.Parse(value)).Date;
             }
 
             if (type != AttributeType.Number)
@@ -110,7 +120,13 @@ namespace io.unlaunch.engine
             if (type == AttributeType.DateTime)
             {
                 var userDateTime = (DateTime) userValue.Get();
-                return userDateTime >= UnixTime.GetDateTimeUtcFromMs(long.Parse(value));
+                return userDateTime >= UnixTime.GetUtcDateTime(long.Parse(value));
+            }
+
+            if (type == AttributeType.Date)
+            {
+                var userDateTime = (DateTime)userValue.Get();
+                return userDateTime.Date >= UnixTime.GetUtcDateTime(long.Parse(value)).Date;
             }
 
             if (type != AttributeType.Number)

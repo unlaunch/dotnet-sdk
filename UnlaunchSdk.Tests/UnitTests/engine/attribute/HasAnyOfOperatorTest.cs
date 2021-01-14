@@ -12,9 +12,9 @@ namespace UnlaunchSdk.Tests.UnitTests.engine.attribute
         private const string AttributeKey = "attributeKey";
 
         [Fact]
-        public void Set()
+        public void Set_userSet_is_super_set()
         {
-            CreateEqualsCondition(AttributeType.Set, "3,5,9");
+            CreateAnyOfCondition(AttributeType.Set, "3,5,9");
 
             var attributes = new[]
             {
@@ -25,9 +25,35 @@ namespace UnlaunchSdk.Tests.UnitTests.engine.attribute
         }
 
         [Fact]
+        public void Set_userSet_is_sub_set()
+        {
+            CreateAnyOfCondition(AttributeType.Set, "3,5,9");
+
+            var attributes = new[]
+            {
+                UnlaunchAttribute.NewSet(AttributeKey, new HashSet<string>(new []{"3","5"}))
+            };
+
+            OnVariationTargetingRulesMatch(attributes);
+        }
+
+        [Fact]
+        public void Set_userSet_has_some_item()
+        {
+            CreateAnyOfCondition(AttributeType.Set, "3,5,9");
+
+            var attributes = new[]
+            {
+                UnlaunchAttribute.NewSet(AttributeKey, new HashSet<string>(new []{"5"}))
+            };
+
+            OnVariationTargetingRulesMatch(attributes);
+        }
+
+        [Fact]
         public void Enumerable()
         {
-            CreateEqualsCondition(AttributeType.Set, "2,8,0");
+            CreateAnyOfCondition(AttributeType.Set, "2,8,0");
 
             var attributes = new[]
             {
@@ -37,7 +63,7 @@ namespace UnlaunchSdk.Tests.UnitTests.engine.attribute
             OnVariationTargetingRulesMatch(attributes);
         }
 
-        private void CreateEqualsCondition(AttributeType type, string userValue)
+        private void CreateAnyOfCondition(AttributeType type, string userValue)
         {
             var flag = FlagResponse.data.flags.First();
             flag.rules.First().conditions = new [] { new TargetRuleConditionDto

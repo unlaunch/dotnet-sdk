@@ -12,9 +12,9 @@ namespace UnlaunchSdk.Tests.UnitTests.engine.attribute
         private const string AttributeKey = "attributeKey";
 
         [Fact]
-        public void Set()
+        public void Set_userSet_is_sub_set()
         {
-            CreateEqualsCondition(AttributeType.Set, "1,2,3");
+            CreatePartOfCondition(AttributeType.Set, "1,2,3");
 
             var attributes = new[]
             {
@@ -25,9 +25,22 @@ namespace UnlaunchSdk.Tests.UnitTests.engine.attribute
         }
 
         [Fact]
+        public void Set_userSet_is_same()
+        {
+            CreatePartOfCondition(AttributeType.Set, "1,2,3");
+
+            var attributes = new[]
+            {
+                UnlaunchAttribute.NewSet(AttributeKey, new HashSet<string>(new []{"1", "3", "2"}))
+            };
+
+            OnVariationTargetingRulesMatch(attributes);
+        }
+
+        [Fact]
         public void Enumerable()
         {
-            CreateEqualsCondition(AttributeType.Set, "1,2,3");
+            CreatePartOfCondition(AttributeType.Set, "1,2,3");
 
             var attributes = new[]
             {
@@ -37,7 +50,7 @@ namespace UnlaunchSdk.Tests.UnitTests.engine.attribute
             OnVariationTargetingRulesMatch(attributes);
         }
 
-        private void CreateEqualsCondition(AttributeType type, string userValue)
+        private void CreatePartOfCondition(AttributeType type, string userValue)
         {
             var flag = FlagResponse.data.flags.First();
             flag.rules.First().conditions = new [] { new TargetRuleConditionDto
