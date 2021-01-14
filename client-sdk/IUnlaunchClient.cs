@@ -7,6 +7,7 @@ namespace io.unlaunch
     {
         bool IsReady();
         void AwaitUntilReady(int millisecondsTimeout);
+        void AwaitUntilReady(TimeSpan timeout);
         void Shutdown();
         AccountDetails AccountDetails();
         UnlaunchFeature GetFeature(string flagKey, string identity);

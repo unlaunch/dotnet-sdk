@@ -1,4 +1,6 @@
-﻿namespace io.unlaunch
+﻿using System;
+
+namespace io.unlaunch
 {
     public interface IUnlaunchClientBuilder
     {
@@ -10,15 +12,15 @@
 
         IUnlaunchClientBuilder OfflineModeWithLocalFeatures(string yamlFeaturesFilePath);
 
-        IUnlaunchClientBuilder PollingIntervalInSeconds(int intervalInSeconds);
+        IUnlaunchClientBuilder PollingInterval(TimeSpan ts);
 
-        IUnlaunchClientBuilder ConnectionTimeoutInMilliseconds(int millisecondsTimeout);
+        IUnlaunchClientBuilder ConnectionTimeout(TimeSpan ts);
 
         IUnlaunchClientBuilder Host(string baseUrl);
 
-        IUnlaunchClientBuilder MetricsFlushIntervalInSeconds(int intervalInSeconds);
+        IUnlaunchClientBuilder MetricsFlushInterval(TimeSpan ts);
 
-        IUnlaunchClientBuilder EventsFlushIntervalInSeconds(int intervalInSeconds);
+        IUnlaunchClientBuilder EventsFlushInterval(TimeSpan ts);
 
         IUnlaunchClientBuilder EventsQueueSize(int maxQueueSize);
 

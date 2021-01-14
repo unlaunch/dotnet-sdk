@@ -16,11 +16,11 @@ namespace io.unlaunch.events
         private readonly IEventHandler _eventHandler;
         private readonly Timer _timer;
 
-        public CountAggregatorEventHandler(IEventHandler eventHandler, long runFrequencyInSeconds)
+        public CountAggregatorEventHandler(IEventHandler eventHandler, TimeSpan runFrequency)
         {
             _eventHandler = eventHandler;
-            _timer = new Timer((e) => { CreateFlushEventsTask(); }, null, TimeSpan.Zero, TimeSpan.FromSeconds(runFrequencyInSeconds));
-            Logger.Info($"Variation count metrics will be aggregated every {runFrequencyInSeconds} seconds");
+            _timer = new Timer((e) => { CreateFlushEventsTask(); }, null, TimeSpan.Zero, runFrequency);
+            Logger.Info($"Variation count metrics will be aggregated every {runFrequency.Seconds} seconds");
         }
         
         public bool Handle(UnlaunchEvent unlaunchEvent)
