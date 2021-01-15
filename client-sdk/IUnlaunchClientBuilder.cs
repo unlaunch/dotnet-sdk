@@ -12,15 +12,15 @@ namespace io.unlaunch
 
         IUnlaunchClientBuilder OfflineModeWithLocalFeatures(string yamlFeaturesFilePath);
 
-        IUnlaunchClientBuilder PollingInterval(TimeSpan ts);
+        IUnlaunchClientBuilder PollingInterval(TimeSpan timeSpan);
 
-        IUnlaunchClientBuilder ConnectionTimeout(TimeSpan ts);
+        IUnlaunchClientBuilder ConnectionTimeout(TimeSpan timeSpan);
 
         IUnlaunchClientBuilder Host(string baseUrl);
 
-        IUnlaunchClientBuilder MetricsFlushInterval(TimeSpan ts);
+        IUnlaunchClientBuilder MetricsFlushInterval(TimeSpan timeSpan);
 
-        IUnlaunchClientBuilder EventsFlushInterval(TimeSpan ts);
+        IUnlaunchClientBuilder EventsFlushInterval(TimeSpan timeSpan);
 
         IUnlaunchClientBuilder EventsQueueSize(int maxQueueSize);
 

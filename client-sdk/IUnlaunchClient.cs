@@ -6,8 +6,7 @@ namespace io.unlaunch
     public interface IUnlaunchClient : IDisposable
     {
         bool IsReady();
-        void AwaitUntilReady(int millisecondsTimeout);
-        void AwaitUntilReady(TimeSpan timeout);
+        void AwaitUntilReady(TimeSpan timeSpan);
         void Shutdown();
         AccountDetails AccountDetails();
         UnlaunchFeature GetFeature(string flagKey, string identity);

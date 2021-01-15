@@ -83,16 +83,16 @@ namespace io.unlaunch
             return this;
         }
 
-        public IUnlaunchClientBuilder PollingInterval(TimeSpan ts)
+        public IUnlaunchClientBuilder PollingInterval(TimeSpan timeSpan)
         {
-            _pollingInterval = ts;
+            _pollingInterval = timeSpan;
             _pollingIntervalUpdatedByUser = true;
             return this;
         }
 
-        public IUnlaunchClientBuilder ConnectionTimeout(TimeSpan ts)
+        public IUnlaunchClientBuilder ConnectionTimeout(TimeSpan timeSpan)
         {
-            _connectionTimeout = ts;
+            _connectionTimeout = timeSpan;
             return this;
         }
 
@@ -102,16 +102,16 @@ namespace io.unlaunch
             return this;
         }
 
-        public IUnlaunchClientBuilder MetricsFlushInterval(TimeSpan ts)
+        public IUnlaunchClientBuilder MetricsFlushInterval(TimeSpan timeSpan)
         {
-            _metricsFlushInterval = ts;
+            _metricsFlushInterval = timeSpan;
             _metricsFlushIntervalUpdatedByUser = true;
             return this;
         }
 
-        public IUnlaunchClientBuilder EventsFlushInterval(TimeSpan ts)
+        public IUnlaunchClientBuilder EventsFlushInterval(TimeSpan timeSpan)
         {
-            _eventsFlushInterval = ts;
+            _eventsFlushInterval = timeSpan;
             _eventsFlushIntervalUpdatedByUser = true;
             return this;
         }
