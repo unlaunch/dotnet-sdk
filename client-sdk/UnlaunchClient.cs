@@ -62,13 +62,13 @@ namespace io.unlaunch
             return _downloadSuccessful.Get();
         }
 
-        public void AwaitUntilReady(int millisecondsTimeout)
+        public void AwaitUntilReady(TimeSpan timeSpan)
         {
-            var isReady = _initialDownloadDoneEvent.Wait(millisecondsTimeout);
+            var isReady = _initialDownloadDoneEvent.Wait(timeSpan.Milliseconds);
             if (!isReady)
             {
-                Logger.Error($"Unlaunch client didn't finish initialization in {millisecondsTimeout} milliSeconds. The download could still be in progress. Check logs for any errors.");
-                throw new TimeoutException($"Unlaunch client was not ready in {millisecondsTimeout} milliseconds");
+                Logger.Error($"Unlaunch client didn't finish initialization in {timeSpan.Milliseconds} milliseconds. The download could still be in progress. Check logs for any errors.");
+                throw new TimeoutException($"Unlaunch client was not ready in {timeSpan.Milliseconds} milliseconds");
             }
         }
 

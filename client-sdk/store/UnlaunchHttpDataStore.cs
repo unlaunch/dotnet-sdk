@@ -28,14 +28,14 @@ namespace io.unlaunch.store
         private readonly AtomicLong _numHttpCalls = new AtomicLong(0);
         private readonly Timer _timer;
 
-        public UnlaunchHttpDataStore(UnlaunchRestWrapper restWrapper, CountdownEvent intInitialDownloadDoneEvent, AtomicBoolean downloadSuccessful, int dataStoreRefreshDelayInSeconds)
+        public UnlaunchHttpDataStore(UnlaunchRestWrapper restWrapper, CountdownEvent intInitialDownloadDoneEvent, AtomicBoolean downloadSuccessful, TimeSpan dataStoreRefreshDelay)
         {
             _restWrapper = restWrapper;
             _initialDownloadDoneEvent = intInitialDownloadDoneEvent;
             _downloadSuccessful = downloadSuccessful;
             _flagMap = new ConcurrentDictionary<string, FeatureFlag>();
 
-            _timer = new Timer((e) => { CreateTask(); }, null, TimeSpan.Zero, TimeSpan.FromSeconds(dataStoreRefreshDelayInSeconds));
+            _timer = new Timer((e) => { CreateTask(); }, null, TimeSpan.Zero, dataStoreRefreshDelay);
         }
 
         public FeatureFlag GetFlag(string flagKey)

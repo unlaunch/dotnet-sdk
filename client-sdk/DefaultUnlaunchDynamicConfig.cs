@@ -107,12 +107,7 @@ namespace io.unlaunch
 
         public string GetString(string key, string defaultValue)
         {
-            if (_configMap.ContainsKey(key))
-            {
-                return _configMap[key];
-            }
-
-            return defaultValue;
+            return _configMap.ContainsKey(key) ? _configMap[key] : defaultValue;
         }
 
         public bool IsEmpty()

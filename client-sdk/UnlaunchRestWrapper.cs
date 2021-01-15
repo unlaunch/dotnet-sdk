@@ -16,17 +16,17 @@ namespace io.unlaunch
 
         private static readonly IUnlaunchLogger Logger = LoggerProvider.For<UnlaunchRestWrapper>();
 
-        UnlaunchRestWrapper(string sdkKey, HttpClient httpClient, string baseUrl, string apiPath, int connectionTimeOutMs)
+        UnlaunchRestWrapper(string sdkKey, HttpClient httpClient, string baseUrl, string apiPath, TimeSpan connectionTimeOut)
         {
-            SetupHttpClient(sdkKey, httpClient, baseUrl, connectionTimeOutMs);
+            SetupHttpClient(sdkKey, httpClient, baseUrl, connectionTimeOut);
             _httpClient = httpClient;
 
             _apiPath = apiPath;
         }
 
-        public static UnlaunchRestWrapper Create(string sdkKey, HttpClient httpClient, string baseUrl, string apiPath, int connectionTimeOutMs)
+        public static UnlaunchRestWrapper Create(string sdkKey, HttpClient httpClient, string baseUrl, string apiPath, TimeSpan connectionTimeOut)
         {
-            return new UnlaunchRestWrapper(sdkKey, httpClient, baseUrl, apiPath, connectionTimeOutMs);
+            return new UnlaunchRestWrapper(sdkKey, httpClient, baseUrl, apiPath, connectionTimeOut);
         }
 
         public async Task<HttpResponseMessage> GetAsync()
@@ -66,14 +66,14 @@ namespace io.unlaunch
             _httpClient?.Dispose();
         }
 
-        private void SetupHttpClient(string sdkKey, HttpClient httpClient, string baseUrl, int connectionTimeOutMs)
+        private void SetupHttpClient(string sdkKey, HttpClient httpClient, string baseUrl, TimeSpan connectionTimeOut)
         {
             if (httpClient == null)
             {
                 throw new ArgumentException("HttpClient can't be null");
             }
-            
-            httpClient.Timeout = TimeSpan.FromMilliseconds(connectionTimeOutMs);
+
+            httpClient.Timeout = connectionTimeOut;
             httpClient.BaseAddress = new Uri(baseUrl);
             httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             httpClient.DefaultRequestHeaders.Add("X-Api-Key", sdkKey);
