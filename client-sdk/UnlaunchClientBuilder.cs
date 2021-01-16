@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Threading;
 using io.unlaunch.atomic;
@@ -38,6 +40,8 @@ namespace io.unlaunch
         public const int MinEventsQueueSize = 500;
         public const int MinMetricsQueueSize = 100;
 
+        private static readonly IDictionary<string, IUnlaunchClient> Clients = new ConcurrentDictionary<string, IUnlaunchClient>();
+
         public IUnlaunchClient Build()
         {
             if (!string.IsNullOrEmpty(_sdkKey) && !_sdkKey.StartsWith("prod"))
@@ -57,11 +61,24 @@ namespace io.unlaunch
             else
             {
                 client = CreateUnlaunchClient();
+                Check4DuplicatedClient(client);
             }
 
             Logger.Info($"client built with following parameters {GetConfigurationAsPrintableString()}");
             
             return client;
+        }
+
+        private void Check4DuplicatedClient(IUnlaunchClient client)
+        {
+            if (Clients.ContainsKey(_sdkKey))
+            {
+                Logger.Warn("Duplicated Unlaunch client is created. Consider creating only one client per sdkKey");
+            }
+            else
+            {
+                Clients.Add(_sdkKey, client);
+            }
         }
 
         public IUnlaunchClientBuilder SdkKey(string sdkKey)
@@ -192,7 +209,7 @@ namespace io.unlaunch
                     var s = Environment.GetEnvironmentVariable(UnlaunchConstants.SdkKeyEnvVariableName);
                     if (string.IsNullOrEmpty(s))
                     {
-                        throw new ArgumentException("sdkKey cannot be null or empty. Must be supplied to the builder or set as an environment variable.");
+                        throw new ArgumentException($"sdkKey cannot be null or empty. Must be supplied to the builder or set as an environment variable. {UnlaunchConstants.GetSdkKeyHelpMessage()}");
                     }
 
                     Logger.Info("Setting SDK Key read from environment variable");
