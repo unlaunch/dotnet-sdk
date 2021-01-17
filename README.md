@@ -34,7 +34,7 @@ namespace your.namespace
             // wait for the client to be ready
             try
             {
-                client.AwaitUntilReady(2000);
+                client.AwaitUntilReady(TimeSpan.FromSeconds(2));
             }
             catch (TimeoutException e) {
                 Console.WriteLine("client wasn't ready " + e.Message);
@@ -82,10 +82,10 @@ You can use builder to customize the client. For more information, see the [offi
 ```
 var client = UnlaunchClient.Builder()
                 .SdkKey("INSERT_YOUR_SDK_KEY")
-                .PollingIntervalInSeconds(60)
-                .EventsFlushIntervalInSeconds(30)
+                .PollingIntervalInSeconds(TimeSpan.FromSeconds(60))
+                .EventsFlushIntervalInSeconds(TimeSpan.FromSeconds(30))
                 .EventsQueueSize(500)
-                .MetricsFlushIntervalInSeconds(30)
+                .MetricsFlushIntervalInSeconds(TimeSpan.FromSeconds(30))
                 .MetricsQueueSize(100)
                 .Build();
 ```
