@@ -148,7 +148,13 @@ namespace io.unlaunch
                 Logger.Debug($"Asked to evaluate flag {flagKey} but shutdown already initiated on the client");
                 return UnlaunchConstants.GetControlFeatureByName(flagKey);
             }
-            
+
+            if (!IsReady())
+            {
+                Logger.Warn("the SDK is not ready. Returning the SDK default 'control' as variation which may not give the right result");
+                return UnlaunchConstants.GetControlFeatureByName(flagKey);
+            }
+
             var user = attributes == null ? UnlaunchUser.Create(identity) : UnlaunchUser.CreateWithAttributes(identity, attributes);
 
             FeatureFlag flag;
