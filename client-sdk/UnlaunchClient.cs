@@ -64,11 +64,11 @@ namespace io.unlaunch
 
         public void AwaitUntilReady(TimeSpan timeSpan)
         {
-            var isReady = _initialDownloadDoneEvent.Wait(timeSpan.Milliseconds);
+            var isReady = _initialDownloadDoneEvent.Wait((int)timeSpan.TotalMilliseconds);
             if (!isReady)
             {
-                Logger.Error($"Unlaunch client didn't finish initialization in {timeSpan.Milliseconds} milliseconds. The download could still be in progress. Check logs for any errors.");
-                throw new TimeoutException($"Unlaunch client was not ready in {timeSpan.Milliseconds} milliseconds");
+                Logger.Error($"Unlaunch client didn't finish initialization in {timeSpan.TotalMilliseconds} milliseconds. The download could still be in progress. Check logs for any errors.");
+                throw new TimeoutException($"Unlaunch client was not ready in {timeSpan.TotalMilliseconds} milliseconds");
             }
         }
 

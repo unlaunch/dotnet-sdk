@@ -12,6 +12,6 @@ namespace io.unlaunch.events
         public IDictionary<string, object> properties { get; set; } = new Dictionary<string, object>();
         public string secondaryKey { get; set; } = string.Empty;
         public string sdk  { get; set; } = "C#";
-        public string sdkVersion { get; set; } = "0.0.5";
+        public string sdkVersion { get; set; } = "0.0.6";
     }
 }
