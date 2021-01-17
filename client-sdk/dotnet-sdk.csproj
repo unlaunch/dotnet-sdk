@@ -5,7 +5,7 @@
 	<PackageId>unlaunch</PackageId>
 	<Authors>unlaunch</Authors>
     <RootNamespace>io.unlaunch</RootNamespace>
-	<Version>0.0.3</Version>
+	<Version>0.0.5</Version>
   </PropertyGroup>
   
   <PropertyGroup>
