@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using FluentAssertions;
 using io.unlaunch;
 using io.unlaunch.engine;
 using io.unlaunch.model;
@@ -22,14 +21,7 @@ namespace UnlaunchSdk.Tests.UnitTests.engine.attribute
                 UnlaunchAttribute.NewBoolean(AttributeKey, true)
             };
 
-            try
-            {
-                OffVariationTargetingRulesNotMatch(attributes);
-            }
-            catch (InvalidCastException e)
-            {
-                e.Should().NotBeNull();
-            }
+            Assert.Throws<InvalidCastException>(() => OffVariationTargetingRulesNotMatch(attributes));
         }
 
         [Fact]

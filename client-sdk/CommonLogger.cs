@@ -6,7 +6,7 @@ namespace io.unlaunch
 {
     class CommonLogger : IUnlaunchLogger
     {
-        private ILog _logger;
+        private readonly ILog _logger;
 
         public CommonLogger(Type type)
         {

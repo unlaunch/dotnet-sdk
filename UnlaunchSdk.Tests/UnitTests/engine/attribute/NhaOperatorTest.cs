@@ -7,14 +7,14 @@ using Xunit;
 
 namespace UnlaunchSdk.Tests.UnitTests.engine.attribute
 {
-    public class NhoOperatorTest : UnlaunchContext
+    public class NhaOperatorTest : UnlaunchContext
     {
         private const string AttributeKey = "attributeKey";
 
         [Fact]
-        public void Set()
+        public void Set_userSet_is_disjoint()
         {
-            CreateEqualsCondition(AttributeType.Set, "0,8,9");
+            CreateNhaCondition(AttributeType.Set, "0,8,9");
 
             var attributes = new[]
             {
@@ -27,7 +27,7 @@ namespace UnlaunchSdk.Tests.UnitTests.engine.attribute
         [Fact]
         public void Enumerable()
         {
-            CreateEqualsCondition(AttributeType.Set, "4,5,7");
+            CreateNhaCondition(AttributeType.Set, "4,5,7");
 
             var attributes = new[]
             {
@@ -37,7 +37,7 @@ namespace UnlaunchSdk.Tests.UnitTests.engine.attribute
             OnVariationTargetingRulesMatch(attributes);
         }
 
-        private void CreateEqualsCondition(AttributeType type, string userValue)
+        private void CreateNhaCondition(AttributeType type, string userValue)
         {
             var flag = FlagResponse.data.flags.First();
             flag.rules.First().conditions = new [] { new TargetRuleConditionDto

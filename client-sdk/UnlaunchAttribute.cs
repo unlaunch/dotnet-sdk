@@ -73,7 +73,17 @@ namespace io.unlaunch
 
         public static UnlaunchAttribute NewDateTime(string key, long millisecondsSinceEpoch)
         {
-            return Create(key, UnixTime.GetDateTimeUtcFromMs(millisecondsSinceEpoch));
+            return Create(key, UnixTime.GetUtcDateTime(millisecondsSinceEpoch));
+        }
+
+        public static UnlaunchAttribute NewDate(string key, DateTime utcDate)
+        {
+            return Create(key, utcDate.Date);
+        }
+
+        public static UnlaunchAttribute NewDate(string key, long millisecondsSinceEpoch)
+        {
+            return Create(key, UnixTime.GetUtcDateTime(millisecondsSinceEpoch).Date);
         }
 
         public string GetKey()

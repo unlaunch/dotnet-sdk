@@ -13,7 +13,7 @@ namespace UnlaunchSdk.Tests.UnitTests.engine.attribute
         [Fact]
         public void String()
         {
-            CreateEqualsCondition(AttributeType.String, "sdk");
+            CreateNswCondition(AttributeType.String, "sdk");
 
             var attributes = new[]
             {
@@ -23,7 +23,7 @@ namespace UnlaunchSdk.Tests.UnitTests.engine.attribute
             OnVariationTargetingRulesMatch(attributes);
         }
 
-        private void CreateEqualsCondition(AttributeType type, string userValue)
+        private void CreateNswCondition(AttributeType type, string userValue)
         {
             var flag = FlagResponse.data.flags.First();
             flag.rules.First().conditions = new [] { new TargetRuleConditionDto

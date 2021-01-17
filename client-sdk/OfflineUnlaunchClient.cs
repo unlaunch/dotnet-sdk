@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace io.unlaunch
 {
@@ -27,6 +28,11 @@ namespace io.unlaunch
         }
 
         public void AwaitUntilReady(int millisecondsTimeout)
+        {
+            
+        }
+
+        public void AwaitUntilReady(TimeSpan timeout)
         {
             
         }

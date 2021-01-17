@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Threading;
 using io.unlaunch.atomic;
@@ -13,13 +15,13 @@ namespace io.unlaunch
 
         private string _sdkKey;
         private bool _isOffline;
-        private int _pollingIntervalInSeconds = 60;
-        private int _metricsFlushIntervalInSeconds = 30;
-        private int _eventsFlushIntervalInSeconds = 60;
+        private TimeSpan _pollingInterval = TimeSpan.FromSeconds(60);
+        private TimeSpan _metricsFlushInterval = TimeSpan.FromSeconds(30);
+        private TimeSpan _eventsFlushInterval = TimeSpan.FromSeconds(60);
+        private TimeSpan _connectionTimeout = TimeSpan.FromSeconds(10);
         private int _metricsQueueSize = 100;
         private int _eventsQueueSize = 500;
         private string _baseUrl = "https://api.unlaunch.io";
-        private int _connectionTimeoutMs = 10_000;
         private string _yamlFeaturesFilePath;
 
         private bool _pollingIntervalUpdatedByUser;
@@ -31,12 +33,14 @@ namespace io.unlaunch
         private const string EventApiPath = "/api/v1/events";
         private const string ImpressionApiPath = "/api/v1/impressions";
         
-        public static int MinPollIntervalInSeconds = 15;
-        public static int MinMetricsFlushIntervalInSeconds = 15;
-        public static int MinEventsFlushIntervalInSeconds = 15;
-        public static int MinEventsQueueSize = 500;
-        public static int MinMetricsQueueSize = 100;
-        public static int MinConnectionTimeoutMillis = 10_000;
+        public static readonly TimeSpan MinPollInterval = TimeSpan.FromSeconds(15);
+        public static readonly TimeSpan MinMetricsFlushInterval = TimeSpan.FromSeconds(15);
+        public static readonly TimeSpan MinEventsFlushInterval = TimeSpan.FromSeconds(15);
+        public static readonly TimeSpan MinConnectionTimeout = TimeSpan.FromSeconds(10);
+        public const int MinEventsQueueSize = 500;
+        public const int MinMetricsQueueSize = 100;
+
+        private static readonly IDictionary<string, IUnlaunchClient> Clients = new ConcurrentDictionary<string, IUnlaunchClient>();
 
         public IUnlaunchClient Build()
         {
@@ -57,11 +61,24 @@ namespace io.unlaunch
             else
             {
                 client = CreateUnlaunchClient();
+                Check4DuplicatedClient(client);
             }
 
             Logger.Info($"client built with following parameters {GetConfigurationAsPrintableString()}");
             
             return client;
+        }
+
+        private void Check4DuplicatedClient(IUnlaunchClient client)
+        {
+            if (Clients.ContainsKey(_sdkKey))
+            {
+                Logger.Warn("Duplicated Unlaunch client is created. Consider creating only one client per sdkKey");
+            }
+            else
+            {
+                Clients.Add(_sdkKey, client);
+            }
         }
 
         public IUnlaunchClientBuilder SdkKey(string sdkKey)
@@ -83,16 +100,16 @@ namespace io.unlaunch
             return this;
         }
 
-        public IUnlaunchClientBuilder PollingIntervalInSeconds(int intervalInSeconds)
+        public IUnlaunchClientBuilder PollingInterval(TimeSpan timeSpan)
         {
-            _pollingIntervalInSeconds = intervalInSeconds;
+            _pollingInterval = timeSpan;
             _pollingIntervalUpdatedByUser = true;
             return this;
         }
 
-        public IUnlaunchClientBuilder ConnectionTimeoutInMilliseconds(int millisecondsTimeout)
+        public IUnlaunchClientBuilder ConnectionTimeout(TimeSpan timeSpan)
         {
-            _connectionTimeoutMs = millisecondsTimeout;
+            _connectionTimeout = timeSpan;
             return this;
         }
 
@@ -102,16 +119,16 @@ namespace io.unlaunch
             return this;
         }
 
-        public IUnlaunchClientBuilder MetricsFlushIntervalInSeconds(int intervalInSeconds)
+        public IUnlaunchClientBuilder MetricsFlushInterval(TimeSpan timeSpan)
         {
-            _metricsFlushIntervalInSeconds = intervalInSeconds;
+            _metricsFlushInterval = timeSpan;
             _metricsFlushIntervalUpdatedByUser = true;
             return this;
         }
 
-        public IUnlaunchClientBuilder EventsFlushIntervalInSeconds(int intervalInSeconds)
+        public IUnlaunchClientBuilder EventsFlushInterval(TimeSpan timeSpan)
         {
-            _eventsFlushIntervalInSeconds = intervalInSeconds;
+            _eventsFlushInterval = timeSpan;
             _eventsFlushIntervalUpdatedByUser = true;
             return this;
         }
@@ -137,10 +154,10 @@ namespace io.unlaunch
 
         private IUnlaunchClient CreateUnlaunchClient()
         {
-            var restWrapper = UnlaunchRestWrapper.Create(_sdkKey, _httpClientFactory.CreateClient(), _baseUrl, FlagApiPath, _connectionTimeoutMs);
+            var restWrapper = UnlaunchRestWrapper.Create(_sdkKey, _httpClientFactory.CreateClient(), _baseUrl, FlagApiPath, _connectionTimeout);
             var initialDownloadDoneEvent = new CountdownEvent(1);
             var downloadSuccessful = new AtomicBoolean(false);
-            var refreshableDataStoreProvider = new RefreshableDataStoreProvider(restWrapper, initialDownloadDoneEvent, downloadSuccessful, _pollingIntervalInSeconds);
+            var refreshableDataStoreProvider = new RefreshableDataStoreProvider(restWrapper, initialDownloadDoneEvent, downloadSuccessful, _pollingInterval);
             
             var dataStore = refreshableDataStoreProvider.GetNoOpDataStore();
             try
@@ -153,12 +170,12 @@ namespace io.unlaunch
                              "correct SDK Key. We'll retry again but this error is usually not recoverable.");
             }
 
-            var impressionApiRestClient = UnlaunchRestWrapper.Create(_sdkKey, _httpClientFactory.CreateClient(), _baseUrl, ImpressionApiPath, _connectionTimeoutMs);
-            var impressionsEventHandler = new GenericEventHandler("metrics-impressions", impressionApiRestClient, _metricsFlushIntervalInSeconds, _metricsQueueSize);
+            var impressionApiRestClient = UnlaunchRestWrapper.Create(_sdkKey, _httpClientFactory.CreateClient(), _baseUrl, ImpressionApiPath, _connectionTimeout);
+            var impressionsEventHandler = new GenericEventHandler("metrics-impressions", impressionApiRestClient, _metricsFlushInterval, _metricsQueueSize);
 
-            var eventsApiRestClient = UnlaunchRestWrapper.Create(_sdkKey, _httpClientFactory.CreateClient(), _baseUrl, EventApiPath, _connectionTimeoutMs);
-            var eventHandler = new GenericEventHandler("generic", eventsApiRestClient, _eventsFlushIntervalInSeconds, _eventsQueueSize);
-            var variationsCountEventHandler = new CountAggregatorEventHandler(eventHandler, _metricsFlushIntervalInSeconds);
+            var eventsApiRestClient = UnlaunchRestWrapper.Create(_sdkKey, _httpClientFactory.CreateClient(), _baseUrl, EventApiPath, _connectionTimeout);
+            var eventHandler = new GenericEventHandler("generic", eventsApiRestClient, _eventsFlushInterval, _eventsQueueSize);
+            var variationsCountEventHandler = new CountAggregatorEventHandler(eventHandler, _metricsFlushInterval);
 
             return UnlaunchClient.Create(dataStore, eventHandler, variationsCountEventHandler, impressionsEventHandler,
                 initialDownloadDoneEvent, downloadSuccessful);
@@ -168,17 +185,17 @@ namespace io.unlaunch
         {
             if (!_pollingIntervalUpdatedByUser)
             {
-                _pollingIntervalInSeconds = MinPollIntervalInSeconds;
+                _pollingInterval = MinPollInterval;
             }
 
             if (!_eventsFlushIntervalUpdatedByUser)
             {
-                _eventsFlushIntervalInSeconds = MinEventsFlushIntervalInSeconds;
+                _eventsFlushInterval = MinEventsFlushInterval;
             }
 
             if (!_metricsFlushIntervalUpdatedByUser)
             {
-                _metricsFlushIntervalInSeconds = MinMetricsFlushIntervalInSeconds;
+                _metricsFlushInterval = MinMetricsFlushInterval;
             }
         }
         
@@ -192,7 +209,7 @@ namespace io.unlaunch
                     var s = Environment.GetEnvironmentVariable(UnlaunchConstants.SdkKeyEnvVariableName);
                     if (string.IsNullOrEmpty(s))
                     {
-                        throw new ArgumentException("sdkKey cannot be null or empty. Must be supplied to the builder or set as an environment variable.");
+                        throw new ArgumentException($"sdkKey cannot be null or empty. Must be supplied to the builder or set as an environment variable. {UnlaunchConstants.GetSdkKeyHelpMessage()}");
                     }
 
                     Logger.Info("Setting SDK Key read from environment variable");
@@ -205,16 +222,16 @@ namespace io.unlaunch
                 }
             }
 
-            Contract.EnsuresOnThrow<ArgumentException>(_pollingIntervalInSeconds >= MinPollIntervalInSeconds,
-                $"pollingInterval must be great than {MinPollIntervalInSeconds} seconds");
-            Contract.EnsuresOnThrow<ArgumentException>(_connectionTimeoutMs >= MinConnectionTimeoutMillis,
-                $"connectionTimeOut must be at least {_connectionTimeoutMs} milliseconds ");
-            Contract.EnsuresOnThrow<ArgumentException>(_connectionTimeoutMs < int.MaxValue,
-                "connectionTimeOut must be less than int.MaxValue={int.MaxValue}");
-            Contract.EnsuresOnThrow<ArgumentException>(_metricsFlushIntervalInSeconds >= MinMetricsFlushIntervalInSeconds,
-                $"metricsFlushInterval must be great than {MinMetricsFlushIntervalInSeconds} seconds");
-            Contract.EnsuresOnThrow<ArgumentException>(_eventsFlushIntervalInSeconds >= MinEventsFlushIntervalInSeconds,
-                $"eventsFlushInterval must be great than {MinEventsFlushIntervalInSeconds} seconds");
+            Contract.EnsuresOnThrow<ArgumentException>(_pollingInterval >= MinPollInterval,
+                $"pollingInterval must be great than {MinPollInterval.Seconds} seconds");
+            Contract.EnsuresOnThrow<ArgumentException>(_connectionTimeout >= MinConnectionTimeout,
+                $"connectionTimeOut must be at least {_connectionTimeout.Milliseconds} milliseconds ");
+            Contract.EnsuresOnThrow<ArgumentException>(_connectionTimeout.Milliseconds < int.MaxValue,
+                "connectionTimeOut must be less than int.MaxValue={int.MaxValue} milliseconds");
+            Contract.EnsuresOnThrow<ArgumentException>(_metricsFlushInterval >= MinMetricsFlushInterval,
+                $"metricsFlushInterval must be great than {MinMetricsFlushInterval.Seconds} seconds");
+            Contract.EnsuresOnThrow<ArgumentException>(_eventsFlushInterval >= MinEventsFlushInterval,
+                $"eventsFlushInterval must be great than {MinEventsFlushInterval.Seconds} seconds");
             Contract.EnsuresOnThrow<ArgumentException>(_eventsQueueSize >= MinEventsQueueSize,
                 $"eventsQueue must be at least {MinEventsQueueSize}");
             Contract.EnsuresOnThrow<ArgumentException>(_metricsQueueSize >= MinMetricsQueueSize,
@@ -224,10 +241,10 @@ namespace io.unlaunch
         private string GetConfigurationAsPrintableString()
         {
             return $"isOffline={_isOffline}" +
-                   $", pollingInterval (seconds) = {_pollingIntervalInSeconds}" +
-                   $", metricsFlushInterval (seconds) = {_metricsFlushIntervalInSeconds}" +
+                   $", pollingInterval (seconds) = {_pollingInterval.Seconds}" +
+                   $", metricsFlushInterval (seconds) = {_metricsFlushInterval.Seconds}" +
                    $", metricsQueueSize = {_metricsQueueSize}" +
-                   $", eventsFlushInterval (seconds) = {_eventsFlushIntervalInSeconds}" +
+                   $", eventsFlushInterval (seconds) = {_eventsFlushInterval.Seconds}" +
                    $", eventsQueueSize = {_eventsQueueSize}" +
                    $", host='{_baseUrl}'";
         }

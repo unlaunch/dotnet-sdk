@@ -24,14 +24,14 @@ namespace io.unlaunch.events
         public AbstractEventHandler(
             string name,
             UnlaunchRestWrapper restClientForEventsApi,
-            int eventFlushIntervalInSeconds,
+            TimeSpan eventFlushInterval,
             int maxBufferSize)
         {
             _name = name;
             _restClient = restClientForEventsApi;
             _maxBufferSize = maxBufferSize;
 
-            _timer = new Timer((e) => { CreateFlushEventsTask(); }, null, TimeSpan.Zero, TimeSpan.FromSeconds(eventFlushIntervalInSeconds));
+            _timer = new Timer((e) => { CreateFlushEventsTask(); }, null, TimeSpan.Zero, eventFlushInterval);
         }
 
         public bool Handle(UnlaunchEvent unlaunchEvent)
