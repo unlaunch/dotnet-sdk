@@ -223,15 +223,15 @@ namespace io.unlaunch
             }
 
             Contract.EnsuresOnThrow<ArgumentException>(_pollingInterval >= MinPollInterval,
-                $"pollingInterval must be great than {MinPollInterval.Seconds} seconds");
+                $"pollingInterval must be great than {MinPollInterval.TotalSeconds} seconds");
             Contract.EnsuresOnThrow<ArgumentException>(_connectionTimeout >= MinConnectionTimeout,
-                $"connectionTimeOut must be at least {_connectionTimeout.Milliseconds} milliseconds ");
-            Contract.EnsuresOnThrow<ArgumentException>(_connectionTimeout.Milliseconds < int.MaxValue,
+                $"connectionTimeOut must be at least {_connectionTimeout.TotalMilliseconds} milliseconds ");
+            Contract.EnsuresOnThrow<ArgumentException>(_connectionTimeout.TotalMilliseconds < int.MaxValue,
                 "connectionTimeOut must be less than int.MaxValue={int.MaxValue} milliseconds");
             Contract.EnsuresOnThrow<ArgumentException>(_metricsFlushInterval >= MinMetricsFlushInterval,
-                $"metricsFlushInterval must be great than {MinMetricsFlushInterval.Seconds} seconds");
+                $"metricsFlushInterval must be great than {MinMetricsFlushInterval.TotalSeconds} seconds");
             Contract.EnsuresOnThrow<ArgumentException>(_eventsFlushInterval >= MinEventsFlushInterval,
-                $"eventsFlushInterval must be great than {MinEventsFlushInterval.Seconds} seconds");
+                $"eventsFlushInterval must be great than {MinEventsFlushInterval.TotalSeconds} seconds");
             Contract.EnsuresOnThrow<ArgumentException>(_eventsQueueSize >= MinEventsQueueSize,
                 $"eventsQueue must be at least {MinEventsQueueSize}");
             Contract.EnsuresOnThrow<ArgumentException>(_metricsQueueSize >= MinMetricsQueueSize,
@@ -241,10 +241,10 @@ namespace io.unlaunch
         private string GetConfigurationAsPrintableString()
         {
             return $"isOffline={_isOffline}" +
-                   $", pollingInterval (seconds) = {_pollingInterval.Seconds}" +
-                   $", metricsFlushInterval (seconds) = {_metricsFlushInterval.Seconds}" +
+                   $", pollingInterval (seconds) = {_pollingInterval.TotalSeconds}" +
+                   $", metricsFlushInterval (seconds) = {_metricsFlushInterval.TotalSeconds}" +
                    $", metricsQueueSize = {_metricsQueueSize}" +
-                   $", eventsFlushInterval (seconds) = {_eventsFlushInterval.Seconds}" +
+                   $", eventsFlushInterval (seconds) = {_eventsFlushInterval.TotalSeconds}" +
                    $", eventsQueueSize = {_eventsQueueSize}" +
                    $", host='{_baseUrl}'";
         }
