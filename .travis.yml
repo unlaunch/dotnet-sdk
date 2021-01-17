@@ -1,0 +1,12 @@
+language: csharp
+
+mono: none
+dotnet: 2.1.502
+solution: dotnet-sdk.sln
+script:
+  - dotnet restore
+  - dotnet build
+  - dotnet test
+  
+notifications:
+  slack: crovate:QnF0NqS4HWq69w3HbnaGw777

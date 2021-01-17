@@ -27,11 +27,6 @@ namespace io.unlaunch
             return true;
         }
 
-        public void AwaitUntilReady(int millisecondsTimeout)
-        {
-            
-        }
-
         public void AwaitUntilReady(TimeSpan timeout)
         {
             
