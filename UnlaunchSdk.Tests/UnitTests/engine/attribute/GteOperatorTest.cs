@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using io.unlaunch;
 using io.unlaunch.engine;
@@ -12,7 +13,7 @@ namespace UnlaunchSdk.Tests.UnitTests.engine.attribute
         private const string AttributeKey = "attributeKey";
 
         [Fact]
-        public void DateTime()
+        public void DateTime_userValue_is_the_same_unixTime()
         {
             var unixTime = UnixTime.Get();
             CreateGteCondition(AttributeType.DateTime, unixTime.ToString());
@@ -26,7 +27,48 @@ namespace UnlaunchSdk.Tests.UnitTests.engine.attribute
         }
 
         [Fact]
-        public void Date()
+        public void DateTime_userValue_is_the_same_dateTime()
+        {
+            var date = DateTime.UtcNow;
+            CreateGteCondition(AttributeType.DateTime, UnixTime.Get(date).ToString());
+
+            var attributes = new[]
+            {
+                UnlaunchAttribute.NewDateTime(AttributeKey, date)
+            };
+
+            OnVariationTargetingRulesMatch(attributes);
+        }
+
+        [Fact]
+        public void DateTime_userValue_is_greater()
+        {
+            var date = DateTime.UtcNow;
+            CreateGteCondition(AttributeType.DateTime, UnixTime.Get(date).ToString());
+
+            var attributes = new[]
+            {
+                UnlaunchAttribute.NewDateTime(AttributeKey, date.AddSeconds(1))
+            };
+
+            OnVariationTargetingRulesMatch(attributes);
+        }
+
+        [Fact]
+        public void DateTime_userValue_is_less()
+        {
+            var date = DateTime.UtcNow;
+            CreateGteCondition(AttributeType.DateTime, UnixTime.Get(date).ToString());
+
+            var attributes = new[]
+            {
+                UnlaunchAttribute.NewDateTime(AttributeKey, date.AddSeconds(-1))
+            };
+
+            OffVariationTargetingRulesNotMatch(attributes);
+        }
+
+        [Fact] public void Date_userValue_is_the_same_unixTime()
         {
             var unixTime = UnixTime.Get();
             CreateGteCondition(AttributeType.Date, unixTime.ToString());
@@ -37,6 +79,48 @@ namespace UnlaunchSdk.Tests.UnitTests.engine.attribute
             };
 
             OnVariationTargetingRulesMatch(attributes);
+        }
+
+        [Fact]
+        public void Date_userValue_is_the_same_dateTime()
+        {
+            var date = DateTime.SpecifyKind(new DateTime(2019, 9, 26), DateTimeKind.Utc);
+            CreateGteCondition(AttributeType.Date, UnixTime.Get(date).ToString());
+
+            var attributes = new[]
+            {
+                UnlaunchAttribute.NewDate(AttributeKey, date)
+            };
+
+            OnVariationTargetingRulesMatch(attributes);
+        }
+
+        [Fact]
+        public void Date_userValue_is_greater()
+        {
+            var date = DateTime.SpecifyKind(new DateTime(2019, 9, 26), DateTimeKind.Utc);
+            CreateGteCondition(AttributeType.Date, UnixTime.Get(date).ToString());
+
+            var attributes = new[]
+            {
+                UnlaunchAttribute.NewDate(AttributeKey, date.AddDays(2))
+            };
+
+            OnVariationTargetingRulesMatch(attributes);
+        }
+
+        [Fact]
+        public void Date_userValue_is_smaller()
+        {
+            var date = DateTime.SpecifyKind(new DateTime(2019, 9, 26), DateTimeKind.Utc);
+            CreateGteCondition(AttributeType.Date, UnixTime.Get(date).ToString());
+
+            var attributes = new[]
+            {
+                UnlaunchAttribute.NewDate(AttributeKey, date.AddDays(-2))
+            };
+
+            OffVariationTargetingRulesNotMatch(attributes);
         }
 
         [Fact]

@@ -11,7 +11,7 @@ namespace UnlaunchSdk.Tests.UnitTests.engine.attribute
         private const string AttributeKey = "attributeKey";
 
         [Fact]
-        public void String()
+        public void StringStartsWith()
         {
             CreateStartsWithCondition(AttributeType.String, "dotnet");
 
@@ -21,6 +21,19 @@ namespace UnlaunchSdk.Tests.UnitTests.engine.attribute
             };
 
             OnVariationTargetingRulesMatch(attributes);
+        }
+
+        [Fact]
+        public void StringNotStartsWith()
+        {
+            CreateStartsWithCondition(AttributeType.String, "sdk");
+
+            var attributes = new[]
+            {
+                UnlaunchAttribute.NewString(AttributeKey, "dotnet-sdk")
+            };
+
+            OffVariationTargetingRulesNotMatch(attributes);
         }
 
         private void CreateStartsWithCondition(AttributeType type, string userValue)
