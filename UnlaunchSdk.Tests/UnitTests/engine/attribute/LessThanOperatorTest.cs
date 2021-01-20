@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using io.unlaunch;
 using io.unlaunch.engine;
@@ -12,7 +13,7 @@ namespace UnlaunchSdk.Tests.UnitTests.engine.attribute
         private const string AttributeKey = "attributeKey";
 
         [Fact]
-        public void DateTime()
+        public void DateTime_userValue_is_less()
         {
             var unixTime = UnixTime.Get();
             CreateLessThanCondition(AttributeType.DateTime, unixTime.ToString());
@@ -26,7 +27,35 @@ namespace UnlaunchSdk.Tests.UnitTests.engine.attribute
         }
 
         [Fact]
-        public void Date()
+        public void DateTime_userValue_is_the_same()
+        {
+            var date = DateTime.UtcNow;
+            CreateLessThanCondition(AttributeType.DateTime, UnixTime.Get(date).ToString());
+
+            var attributes = new[]
+            {
+                UnlaunchAttribute.NewDateTime(AttributeKey, date)
+            };
+
+            OffVariationTargetingRulesNotMatch(attributes);
+        }
+
+        [Fact]
+        public void DateTime_userValue_is_greater()
+        {
+            var date = DateTime.UtcNow;
+            CreateLessThanCondition(AttributeType.DateTime, UnixTime.Get(date).ToString());
+
+            var attributes = new[]
+            {
+                UnlaunchAttribute.NewDateTime(AttributeKey, date.AddMilliseconds(2))
+            };
+
+            OffVariationTargetingRulesNotMatch(attributes);
+        }
+
+        [Fact]
+        public void Date_userValue_is_smaller_unixTime()
         {
             var unixTime = UnixTime.Get();
             CreateLessThanCondition(AttributeType.Date, unixTime.ToString());
@@ -37,6 +66,34 @@ namespace UnlaunchSdk.Tests.UnitTests.engine.attribute
             };
 
             OnVariationTargetingRulesMatch(attributes);
+        }
+
+        [Fact]
+        public void Date_userValue_is_smaller_dateTime()
+        {
+            var date = DateTime.SpecifyKind(new DateTime(2019, 9, 26), DateTimeKind.Utc);
+            CreateLessThanCondition(AttributeType.Date, UnixTime.Get(date).ToString());
+
+            var attributes = new[]
+            {
+                UnlaunchAttribute.NewDate(AttributeKey, date.AddDays(-1))
+            };
+
+            OnVariationTargetingRulesMatch(attributes);
+        }
+
+        [Fact]
+        public void Date_userValue_is_greater_dateTime()
+        {
+            var date = DateTime.SpecifyKind(new DateTime(2019, 9, 26), DateTimeKind.Utc);
+            CreateLessThanCondition(AttributeType.Date, UnixTime.Get(date).ToString());
+
+            var attributes = new[]
+            {
+                UnlaunchAttribute.NewDate(AttributeKey, date.AddDays(1))
+            };
+
+            OffVariationTargetingRulesNotMatch(attributes);
         }
 
         [Fact]

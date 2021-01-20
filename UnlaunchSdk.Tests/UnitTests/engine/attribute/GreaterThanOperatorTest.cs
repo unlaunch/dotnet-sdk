@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using io.unlaunch;
 using io.unlaunch.engine;
@@ -12,7 +13,7 @@ namespace UnlaunchSdk.Tests.UnitTests.engine.attribute
         private const string AttributeKey = "attributeKey";
 
         [Fact]
-        public void DateTime()
+        public void DateTime_userValue_is_one_second_ahead()
         {
             var unixTime = UnixTime.Get();
             CreateGreaterThanCondition(AttributeType.DateTime, unixTime.ToString());
@@ -26,7 +27,35 @@ namespace UnlaunchSdk.Tests.UnitTests.engine.attribute
         }
 
         [Fact]
-        public void Date()
+        public void DateTime_userValue_is_the_same()
+        {
+            var unixTime = UnixTime.Get();
+            CreateGreaterThanCondition(AttributeType.DateTime, unixTime.ToString());
+
+            var attributes = new[]
+            {
+                UnlaunchAttribute.NewDateTime(AttributeKey, UnixTime.GetUtcDateTime(unixTime))
+            };
+
+            OffVariationTargetingRulesNotMatch(attributes);
+        }
+
+        [Fact]
+        public void DateTime_userValue_is_less()
+        {
+            var unixTime = UnixTime.Get();
+            CreateGreaterThanCondition(AttributeType.DateTime, unixTime.ToString());
+
+            var attributes = new[]
+            {
+                UnlaunchAttribute.NewDateTime(AttributeKey, UnixTime.GetUtcDateTime(unixTime - 1))
+            };
+
+            OffVariationTargetingRulesNotMatch(attributes);
+        }
+
+        [Fact]
+        public void Date_userValue_is_greater_unixTime()
         {
             var unixTime = UnixTime.Get();
             CreateGreaterThanCondition(AttributeType.Date, unixTime.ToString());
@@ -37,6 +66,48 @@ namespace UnlaunchSdk.Tests.UnitTests.engine.attribute
             };
 
             OnVariationTargetingRulesMatch(attributes);
+        }
+
+        [Fact]
+        public void Date_userValue_is_greater_dateTime()
+        {
+            var date = DateTime.SpecifyKind(new DateTime(2019, 9, 26), DateTimeKind.Utc);
+            CreateGreaterThanCondition(AttributeType.Date, UnixTime.Get(date).ToString());
+
+            var attributes = new[]
+            {
+                UnlaunchAttribute.NewDate(AttributeKey, date.AddDays(1))
+            };
+
+            OnVariationTargetingRulesMatch(attributes);
+        }
+
+        [Fact]
+        public void Date_userValue_is_less()
+        {
+            var date = DateTime.SpecifyKind(new DateTime(2019, 9, 26), DateTimeKind.Utc);
+            CreateGreaterThanCondition(AttributeType.Date, UnixTime.Get(date).ToString());
+
+            var attributes = new[]
+            {
+                UnlaunchAttribute.NewDate(AttributeKey, date.AddDays(-1))
+            };
+
+            OffVariationTargetingRulesNotMatch(attributes);
+        }
+
+        [Fact]
+        public void Date_userValue_is_one_hour_less_which_is_previous_day()
+        {
+            var date = DateTime.SpecifyKind(new DateTime(2019, 9, 26), DateTimeKind.Utc);
+            CreateGreaterThanCondition(AttributeType.Date, UnixTime.Get(date).ToString());
+
+            var attributes = new[]
+            {
+                UnlaunchAttribute.NewDate(AttributeKey, date.AddHours(1)) // one hour more but still in same day
+            };
+
+            OffVariationTargetingRulesNotMatch(attributes);
         }
 
         [Fact]

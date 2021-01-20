@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using io.unlaunch;
 using io.unlaunch.engine;
@@ -12,7 +13,7 @@ namespace UnlaunchSdk.Tests.UnitTests.engine.attribute
         private const string AttributeKey = "attributeKey";
 
         [Fact]
-        public void DateTime()
+        public void DateTime_userValue_is_same_unixTime()
         {
             var unixTime = UnixTime.Get();
             CreateLteCondition(AttributeType.DateTime, unixTime.ToString());
@@ -26,7 +27,35 @@ namespace UnlaunchSdk.Tests.UnitTests.engine.attribute
         }
 
         [Fact]
-        public void Date()
+        public void DateTime_userValue_is_greater_dateTime()
+        {
+            var date = DateTime.SpecifyKind(new DateTime(2019, 9, 26), DateTimeKind.Utc);
+            CreateLteCondition(AttributeType.DateTime, UnixTime.Get(date).ToString());
+
+            var attributes = new[]
+            {
+                UnlaunchAttribute.NewDateTime(AttributeKey, date.AddMilliseconds(1))
+            };
+
+            OffVariationTargetingRulesNotMatch(attributes);
+        }
+
+        [Fact]
+        public void DateTime_userValue_is_greater_unixTime()
+        {
+            var unixTime = UnixTime.Get();
+            CreateLteCondition(AttributeType.DateTime, unixTime.ToString());
+
+            var attributes = new[]
+            {
+                UnlaunchAttribute.NewDateTime(AttributeKey, unixTime + 1)
+            };
+
+            OffVariationTargetingRulesNotMatch(attributes);
+        }
+
+        [Fact]
+        public void Date_userValue_is_same_unixTime()
         {
             var unixTime = UnixTime.Get();
             CreateLteCondition(AttributeType.Date, unixTime.ToString());
@@ -37,6 +66,48 @@ namespace UnlaunchSdk.Tests.UnitTests.engine.attribute
             };
 
             OnVariationTargetingRulesMatch(attributes);
+        }
+
+        [Fact]
+        public void Date_userValue_is_same_dateTime()
+        {
+            var date = DateTime.SpecifyKind(new DateTime(2019, 9, 26), DateTimeKind.Utc);
+            CreateLteCondition(AttributeType.Date, UnixTime.Get(date).ToString());
+
+            var attributes = new[]
+            {
+                UnlaunchAttribute.NewDate(AttributeKey, date)
+            };
+
+            OnVariationTargetingRulesMatch(attributes);
+        }
+
+        [Fact]
+        public void Date_userValue_is_greater_dateTime()
+        {
+            var date = DateTime.SpecifyKind(new DateTime(2019, 9, 26), DateTimeKind.Utc);
+            CreateLteCondition(AttributeType.Date, UnixTime.Get(date).ToString());
+
+            var attributes = new[]
+            {
+                UnlaunchAttribute.NewDate(AttributeKey, date.AddDays(1))
+            };
+
+            OffVariationTargetingRulesNotMatch(attributes);
+        }
+
+        [Fact]
+        public void Date_userValue_is_greater_unixTime()
+        {
+            var unixTime = UnixTime.Get();
+            CreateLteCondition(AttributeType.DateTime, unixTime.ToString());
+
+            var attributes = new[]
+            {
+                UnlaunchAttribute.NewDate(AttributeKey, unixTime + 86400*1000)
+            };
+
+            OffVariationTargetingRulesNotMatch(attributes);
         }
 
         [Fact]

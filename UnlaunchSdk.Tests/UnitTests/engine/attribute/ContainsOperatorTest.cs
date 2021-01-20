@@ -11,9 +11,9 @@ namespace UnlaunchSdk.Tests.UnitTests.engine.attribute
         private const string AttributeKey = "attributeKey";
 
         [Fact]
-        public void String()
+        public void StringContains()
         {
-            CreateEqualsCondition(AttributeType.String, "net");
+            CreateContainsCondition(AttributeType.String, "net");
 
             var attributes = new[]
             {
@@ -23,7 +23,20 @@ namespace UnlaunchSdk.Tests.UnitTests.engine.attribute
             OnVariationTargetingRulesMatch(attributes);
         }
 
-        private void CreateEqualsCondition(AttributeType type, string userValue)
+        [Fact]
+        public void StringNotContains()
+        {
+            CreateContainsCondition(AttributeType.String, "dotnet");
+
+            var attributes = new[]
+            {
+                UnlaunchAttribute.NewString(AttributeKey, "dotnet-sdk")
+            };
+
+            OnVariationTargetingRulesMatch(attributes);
+        }
+
+        private void CreateContainsCondition(AttributeType type, string userValue)
         {
             var flag = FlagResponse.data.flags.First();
             flag.rules.First().conditions = new [] { new TargetRuleConditionDto

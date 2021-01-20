@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using io.unlaunch;
 using io.unlaunch.engine;
@@ -26,7 +25,7 @@ namespace UnlaunchSdk.Tests.UnitTests.engine.attribute
         }
 
         [Fact]
-        public void DateTime()
+        public void DateTime_userValue_is_one_millisecond_behind()
         {
             var unixTime = UnixTime.Get();
             CreateNotEqualsCondition(AttributeType.DateTime, unixTime.ToString());
@@ -68,7 +67,21 @@ namespace UnlaunchSdk.Tests.UnitTests.engine.attribute
         }
 
         [Fact]
-        public void String()
+        public void StringEquals()
+        {
+            var userValue = "dotnet-sdk";
+            CreateNotEqualsCondition(AttributeType.String, userValue);
+
+            var attributes = new[]
+            {
+                UnlaunchAttribute.NewString(AttributeKey, userValue)
+            };
+
+            OffVariationTargetingRulesNotMatch(attributes);
+        }
+
+        [Fact]
+        public void StringNotEquals()
         {
             var userValue = "dotnet-sdk";
             CreateNotEqualsCondition(AttributeType.String, userValue);

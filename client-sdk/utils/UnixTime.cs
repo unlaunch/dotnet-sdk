@@ -10,6 +10,12 @@ namespace io.unlaunch.utils
             return (long) span.TotalMilliseconds;
         }
 
+        public static long Get(DateTime utcDateTime)
+        {
+            var span = utcDateTime - new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+            return (long)span.TotalMilliseconds;
+        }
+
         public static DateTime GetUtcDateTime(long unixTimeMilliseconds)
         {
             var dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
