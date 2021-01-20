@@ -20,7 +20,7 @@ namespace UnlaunchSdk.Tests.UnitTests.engine.attribute
 
             var attributes = new[]
             {
-                UnlaunchAttribute.NewDateTime(AttributeKey, UnixTime.GetUtcDateTime(unixTime - 1))
+                UnlaunchAttribute.NewDateTime(AttributeKey, UnixTime.GetUtcDateTime(unixTime - 1000))
             };
 
             OnVariationTargetingRulesMatch(attributes);
@@ -48,7 +48,7 @@ namespace UnlaunchSdk.Tests.UnitTests.engine.attribute
 
             var attributes = new[]
             {
-                UnlaunchAttribute.NewDateTime(AttributeKey, date.AddMilliseconds(2))
+                UnlaunchAttribute.NewDateTime(AttributeKey, date.AddSeconds(2))
             };
 
             OffVariationTargetingRulesNotMatch(attributes);

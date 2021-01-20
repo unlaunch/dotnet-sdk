@@ -54,14 +54,14 @@ namespace UnlaunchSdk.Tests.UnitTests.engine.attribute
         }
 
         [Fact]
-        public void DateTime_userValue_is_one_millisecond_ahead()
+        public void DateTime_userValue_is_one_second_ahead()
         {
             var date = DateTime.UtcNow;
             CreateEqualsCondition(AttributeType.DateTime, UnixTime.Get(date).ToString());
 
             var attributes = new[]
             {
-                UnlaunchAttribute.NewDateTime(AttributeKey, date.AddMilliseconds(1))
+                UnlaunchAttribute.NewDateTime(AttributeKey, date.AddSeconds(1))
             };
 
             OffVariationTargetingRulesNotMatch(attributes);

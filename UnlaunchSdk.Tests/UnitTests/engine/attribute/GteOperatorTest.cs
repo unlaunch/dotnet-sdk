@@ -62,7 +62,7 @@ namespace UnlaunchSdk.Tests.UnitTests.engine.attribute
 
             var attributes = new[]
             {
-                UnlaunchAttribute.NewDateTime(AttributeKey, date.AddMilliseconds(-1))
+                UnlaunchAttribute.NewDateTime(AttributeKey, date.AddSeconds(-1))
             };
 
             OffVariationTargetingRulesNotMatch(attributes);

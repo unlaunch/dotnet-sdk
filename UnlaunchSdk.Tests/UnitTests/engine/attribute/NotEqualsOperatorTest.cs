@@ -25,14 +25,14 @@ namespace UnlaunchSdk.Tests.UnitTests.engine.attribute
         }
 
         [Fact]
-        public void DateTime_userValue_is_one_millisecond_behind()
+        public void DateTime_userValue_is_one_second_behind()
         {
             var unixTime = UnixTime.Get();
             CreateNotEqualsCondition(AttributeType.DateTime, unixTime.ToString());
 
             var attributes = new[]
             {
-                UnlaunchAttribute.NewDateTime(AttributeKey, UnixTime.GetUtcDateTime(unixTime - 1))
+                UnlaunchAttribute.NewDateTime(AttributeKey, UnixTime.GetUtcDateTime(unixTime - 1000))
             };
 
             OnVariationTargetingRulesMatch(attributes);
