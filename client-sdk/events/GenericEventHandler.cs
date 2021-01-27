@@ -6,9 +6,10 @@ namespace io.unlaunch.events
     {
         public GenericEventHandler(
             string name,
+            bool enabled,
             UnlaunchRestWrapper restClientForEventsApi,
             TimeSpan eventFlushInterval,
-            int maxBufferSize) : base(name, restClientForEventsApi, eventFlushInterval, maxBufferSize)
+            int maxBufferSize) : base(name, enabled, restClientForEventsApi, eventFlushInterval, maxBufferSize)
         {
 
         }
