@@ -171,10 +171,10 @@ namespace io.unlaunch
             }
 
             var impressionApiRestClient = UnlaunchRestWrapper.Create(_sdkKey, _httpClientFactory.CreateClient(), _baseUrl, ImpressionApiPath, _connectionTimeout);
-            var impressionsEventHandler = new GenericEventHandler("metrics-impressions", impressionApiRestClient, _metricsFlushInterval, _metricsQueueSize);
+            var impressionsEventHandler = new GenericEventHandler("metrics-impressions", false, impressionApiRestClient, _metricsFlushInterval, _metricsQueueSize);
 
             var eventsApiRestClient = UnlaunchRestWrapper.Create(_sdkKey, _httpClientFactory.CreateClient(), _baseUrl, EventApiPath, _connectionTimeout);
-            var eventHandler = new GenericEventHandler("generic", eventsApiRestClient, _eventsFlushInterval, _eventsQueueSize);
+            var eventHandler = new GenericEventHandler("generic", true, eventsApiRestClient, _eventsFlushInterval, _eventsQueueSize);
             var variationsCountEventHandler = new CountAggregatorEventHandler(eventHandler, _metricsFlushInterval);
 
             return UnlaunchClient.Create(dataStore, eventHandler, variationsCountEventHandler, impressionsEventHandler,

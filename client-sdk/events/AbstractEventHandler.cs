@@ -17,17 +17,20 @@ namespace io.unlaunch.events
         private readonly UnlaunchRestWrapper _restClient;
         private readonly AtomicBoolean _closed = new AtomicBoolean(false);
         private readonly string _name;
+        private readonly bool _enabled;
         private readonly int _maxBufferSize;
         private readonly AtomicLong _lastFlushInMillis = new AtomicLong(0);
         private readonly Timer _timer;
 
         public AbstractEventHandler(
             string name,
+            bool enabled,
             UnlaunchRestWrapper restClientForEventsApi,
             TimeSpan eventFlushInterval,
             int maxBufferSize)
         {
             _name = name;
+            _enabled = enabled;
             _restClient = restClientForEventsApi;
             _maxBufferSize = maxBufferSize;
 
@@ -36,7 +39,7 @@ namespace io.unlaunch.events
 
         public bool Handle(UnlaunchEvent unlaunchEvent)
         {
-            if (unlaunchEvent == null || _closed.Get())
+            if (!_enabled || unlaunchEvent == null || _closed.Get())
             {
                 return false;
             }
