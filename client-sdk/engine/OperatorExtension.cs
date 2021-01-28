@@ -64,7 +64,7 @@ namespace io.unlaunch.engine
                 case AttributeType.DateTime: 
                 {
                     var userDateTime = (DateTime) userValue.Get();
-                    return userDateTime == UnixTime.GetUtcDateTime(long.Parse(value));
+                    return UnixTime.Get(userDateTime) == long.Parse(value);
                 }
                 case AttributeType.Date:
                 {

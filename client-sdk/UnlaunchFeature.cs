@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace io.unlaunch
 {
@@ -33,11 +34,21 @@ namespace io.unlaunch
 
         public IDictionary<string, string> GetVariationConfigAsDictionary()
         {
+            if (_properties == null || !_properties.Any())
+            {
+                return new Dictionary<string, string>();
+            }
+            
             return new Dictionary<string, string>(_properties);
         }
 
         public IUnlaunchDynamicConfig GetVariationConfig()
         {
+            if (_properties == null || !_properties.Any())
+            {
+                return new DefaultUnlaunchDynamicConfig(null);
+            }
+            
             return new DefaultUnlaunchDynamicConfig(new ReadOnlyDictionary<string, string>(_properties));
         }
 
