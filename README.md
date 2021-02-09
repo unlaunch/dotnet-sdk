@@ -13,6 +13,10 @@ The .Net SDK provides .Net Framework or .Net Core API to access Unlaunch feature
 ### Compatibility
 .Net Framework 4.5+ and .Net Core 2.0+
 
+### This is a server-side SDK
+This SDK is server-side and should be used in applications that you run on your own servers such as backend
+ services or web servers. For more information, see [this](https://docs.unlaunch.io/docs/sdks/client-vs-server-side-sdks).
+
 ## Getting Started
 Here is a simple example. 
 
