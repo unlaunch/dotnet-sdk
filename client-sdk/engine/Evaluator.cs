@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using io.unlaunch.atomic;
@@ -114,7 +115,7 @@ namespace io.unlaunch.engine
             return true;
         }
 
-        private long GetHash(string key)
+        private static long GetHash(string key)
         {
             var hashAlgorithm = MurmurHash.Create32(0); 
             var bytes = Encoding.UTF8.GetBytes(key);
@@ -126,10 +127,9 @@ namespace io.unlaunch.engine
         {
             foreach (var variation in flag.Variations)
             {
-                if (variation.AllowList != null)
+                if (variation.AllowList != null && variation.AllowList.Any())
                 {
-                    var allowList = variation.AllowList.Replace(" ", "").Split(',');
-
+                    var allowList = new HashSet<string>(variation.AllowList.Split(','));
                     if (allowList.Contains(user.GetId()))
                     {
                         return variation;
@@ -157,7 +157,7 @@ namespace io.unlaunch.engine
             return null;
         }
 
-        private bool IsVariationAvailable(int rolloutPercent, int bucket)
+        private static bool IsVariationAvailable(int rolloutPercent, int bucket)
         {
             return bucket <= rolloutPercent;
         }
