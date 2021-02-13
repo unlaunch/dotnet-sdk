@@ -127,7 +127,7 @@ namespace io.unlaunch.engine
         {
             foreach (var variation in flag.Variations)
             {
-                if (variation.AllowList != null && variation.AllowList.Any())
+                if (variation.AllowList != null)
                 {
                     var allowList = new HashSet<string>(variation.AllowList.Split(','));
                     if (allowList.Contains(user.GetId()))
