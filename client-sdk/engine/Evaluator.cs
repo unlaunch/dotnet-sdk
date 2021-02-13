@@ -12,7 +12,7 @@ namespace io.unlaunch.engine
 
         public UnlaunchFeature Evaluate(FeatureFlag flag, UnlaunchUser user)
         {
-            var evaluationReasonRef = new AtomicReference<string>();
+            var evaluationReasonRef = new AtomicReference<string>(string.Empty);
             var variation = EvaluateInternal(flag, user, evaluationReasonRef);
 
             return new UnlaunchFeature(flag.Key, variation.Key, variation.Properties, evaluationReasonRef.Get());

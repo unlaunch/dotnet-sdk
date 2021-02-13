@@ -6,14 +6,24 @@ namespace io.unlaunch.atomic
     {
         private T _t;
 
-        public void Set(T t) 
+        public AtomicReference(T t)
         {
-            Interlocked.Exchange(ref _t, t);
+            SetReference(t);
+        }
+
+        public void Set(T t)
+        {
+            SetReference(t);
         }
 
         public T Get()
         {
             return _t;
+        }
+
+        private void SetReference(T t)
+        {
+            Interlocked.Exchange(ref _t, t);
         }
     }
 }
