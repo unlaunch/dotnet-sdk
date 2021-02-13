@@ -10,7 +10,7 @@ namespace io.unlaunch.store
         private readonly TimeSpan _dataStoreRefreshDelay;
         private readonly CountdownEvent _initialDownloadDoneEvent;
         private readonly AtomicBoolean _downloadSuccessful;
-        private readonly AtomicReference<UnlaunchHttpDataStore> _refreshableUnlaunchFetcherRef = new AtomicReference<UnlaunchHttpDataStore>();
+        private readonly AtomicReference<UnlaunchHttpDataStore> _refreshableUnlaunchFetcherRef = new AtomicReference<UnlaunchHttpDataStore>(null);
         
         public RefreshableDataStoreProvider(
             UnlaunchRestWrapper restWrapper,

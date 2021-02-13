@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -21,9 +20,9 @@ namespace io.unlaunch.store
         private readonly UnlaunchRestWrapper _restWrapper;
         private readonly CountdownEvent _initialDownloadDoneEvent;
         private readonly AtomicBoolean _downloadSuccessful;
-        private readonly IDictionary<string, FeatureFlag> _flagMap;
-        private readonly AtomicReference<string> _projectNameRef = new AtomicReference<string>();
-        private readonly AtomicReference<string> _environmentNameRef = new AtomicReference<string>();
+        private readonly AtomicReference<IDictionary<string, FeatureFlag>> _flagMapReference;
+        private readonly AtomicReference<string> _projectNameRef = new AtomicReference<string>(string.Empty);
+        private readonly AtomicReference<string> _environmentNameRef = new AtomicReference<string>(string.Empty);
         private readonly AtomicBoolean _isTaskRunning = new AtomicBoolean(false);
         private readonly AtomicLong _numHttpCalls = new AtomicLong(0);
         private readonly Timer _timer;
@@ -33,24 +32,24 @@ namespace io.unlaunch.store
             _restWrapper = restWrapper;
             _initialDownloadDoneEvent = intInitialDownloadDoneEvent;
             _downloadSuccessful = downloadSuccessful;
-            _flagMap = new ConcurrentDictionary<string, FeatureFlag>();
+            _flagMapReference = new AtomicReference<IDictionary<string, FeatureFlag>>(new Dictionary<string, FeatureFlag>());
 
             _timer = new Timer((e) => { CreateTask(); }, null, TimeSpan.Zero, dataStoreRefreshDelay);
         }
 
         public FeatureFlag GetFlag(string flagKey)
         {
-            return _flagMap.ContainsKey(flagKey) ? _flagMap[flagKey] : null;
+            return _flagMapReference.Get().ContainsKey(flagKey) ? _flagMapReference.Get()[flagKey] : null;
         }
 
         public IEnumerable<FeatureFlag> GetAllFlags()
         {
-            return _flagMap.Values.ToList();
+            return _flagMapReference.Get().Values.ToList();
         }
 
         public bool IsFlagExist(string flagKey)
         {
-            return _flagMap.ContainsKey(flagKey);
+            return _flagMapReference.Get().ContainsKey(flagKey);
         }
 
         public string GetProjectName()
@@ -71,7 +70,7 @@ namespace io.unlaunch.store
         public void Dispose()
         {
             _timer?.Dispose();
-            _flagMap?.Clear();
+            _flagMapReference.Set(new Dictionary<string, FeatureFlag>());
             _isTaskRunning.Set(true);
         }
 
@@ -110,17 +109,8 @@ namespace io.unlaunch.store
                     _environmentNameRef.Set(flagResponse.data.envName);
 
                     var featureFlags = FlagMapper.GetFeatureFlags(flagResponse.data.flags);
-                    foreach (var featureFlag in featureFlags)
-                    {
-                        if (_flagMap.ContainsKey(featureFlag.Key))
-                        {
-                            _flagMap[featureFlag.Key] = featureFlag;
-                        }
-                        else
-                        {
-                            _flagMap.Add(featureFlag.Key, featureFlag);
-                        }
-                    }
+                    var flagMap = featureFlags.ToDictionary(x => x.Key);
+                    _flagMapReference.Set(flagMap);
 
                     fetchedSuccessfully = true;
                 }
