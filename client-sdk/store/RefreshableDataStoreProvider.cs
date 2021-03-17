@@ -7,6 +7,7 @@ namespace io.unlaunch.store
     public class RefreshableDataStoreProvider
     {
         private readonly UnlaunchRestWrapper _restWrapper;
+        private readonly UnlaunchGenericRestWrapper _s3BucketClient;
         private readonly TimeSpan _dataStoreRefreshDelay;
         private readonly CountdownEvent _initialDownloadDoneEvent;
         private readonly AtomicBoolean _downloadSuccessful;
@@ -14,11 +15,13 @@ namespace io.unlaunch.store
         
         public RefreshableDataStoreProvider(
             UnlaunchRestWrapper restWrapper,
+            UnlaunchGenericRestWrapper s3BucketClient,
             CountdownEvent initialDownloadDoneEvent,
             AtomicBoolean downloadSuccessful,
             TimeSpan dataStoreRefreshDelay)
         {
             _restWrapper = restWrapper;
+            _s3BucketClient = s3BucketClient;
             _dataStoreRefreshDelay = dataStoreRefreshDelay;
             _initialDownloadDoneEvent = initialDownloadDoneEvent;
             _downloadSuccessful = downloadSuccessful;
@@ -31,7 +34,7 @@ namespace io.unlaunch.store
                 return _refreshableUnlaunchFetcherRef.Get();
             }
 
-            var dataStore = new UnlaunchHttpDataStore(_restWrapper, _initialDownloadDoneEvent, _downloadSuccessful, _dataStoreRefreshDelay);
+            var dataStore = new UnlaunchHttpDataStore(_restWrapper, _s3BucketClient, _initialDownloadDoneEvent, _downloadSuccessful, _dataStoreRefreshDelay);
             _refreshableUnlaunchFetcherRef.Set(dataStore);
 
             return dataStore;
