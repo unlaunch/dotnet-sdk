@@ -22,6 +22,7 @@ namespace io.unlaunch
         private int _metricsQueueSize = 100;
         private int _eventsQueueSize = 500;
         private string _baseUrl = "https://api.unlaunch.io";
+        private string _s3BucketUrl = "https://api-unlaunch-io-master-flags.s3-us-west-1.amazonaws.com";
         private string _yamlFeaturesFilePath;
 
         private bool _pollingIntervalUpdatedByUser;
@@ -44,6 +45,8 @@ namespace io.unlaunch
 
         public IUnlaunchClient Build()
         {
+            BuildS3BucketAddress();
+
             if (!string.IsNullOrEmpty(_sdkKey) && !_sdkKey.StartsWith("prod"))
             {
                 Logger.Info("SDK key doesn't appear to be for production environment. Using aggressive settings to " +
@@ -157,7 +160,9 @@ namespace io.unlaunch
             var restWrapper = UnlaunchRestWrapper.Create(_sdkKey, _httpClientFactory.CreateClient(), _baseUrl, FlagApiPath, _connectionTimeout);
             var initialDownloadDoneEvent = new CountdownEvent(1);
             var downloadSuccessful = new AtomicBoolean(false);
-            var refreshableDataStoreProvider = new RefreshableDataStoreProvider(restWrapper, initialDownloadDoneEvent, downloadSuccessful, _pollingInterval);
+            var s3BucketClient = UnlaunchGenericRestWrapper.Create(_httpClientFactory.CreateClient(), _s3BucketUrl, _sdkKey, _connectionTimeout);
+            var refreshableDataStoreProvider = new RefreshableDataStoreProvider(restWrapper, s3BucketClient, 
+                                                        initialDownloadDoneEvent, downloadSuccessful, _pollingInterval);
             
             var dataStore = refreshableDataStoreProvider.GetNoOpDataStore();
             try
@@ -247,6 +252,19 @@ namespace io.unlaunch
                    $", eventsFlushInterval (seconds) = {_eventsFlushInterval.TotalSeconds}" +
                    $", eventsQueueSize = {_eventsQueueSize}" +
                    $", host='{_baseUrl}'";
+        }
+
+        private void BuildS3BucketAddress()
+        {
+            if (string.IsNullOrEmpty(_baseUrl))
+            {
+                throw new ArgumentException("Host can't be null or empty");
+            }
+
+            if (_baseUrl != "https://api.unlaunch.io")
+            {
+                _s3BucketUrl = "https://app-qa-unlaunch-io-master-flags.s3-us-west-1.amazonaws.com";
+            }
         }
     }
 }
