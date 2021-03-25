@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using io.unlaunch.atomic;
@@ -31,10 +30,10 @@ namespace io.unlaunch.store
         private readonly Timer _timer;
 
         public UnlaunchHttpDataStore(
-            UnlaunchRestWrapper restWrapper, 
-            UnlaunchGenericRestWrapper s3BucketClient, 
-            CountdownEvent intInitialDownloadDoneEvent, 
-            AtomicBoolean downloadSuccessful, 
+            UnlaunchRestWrapper restWrapper,
+            UnlaunchGenericRestWrapper s3BucketClient,
+            CountdownEvent intInitialDownloadDoneEvent,
+            AtomicBoolean downloadSuccessful,
             TimeSpan dataStoreRefreshDelay)
         {
             _restWrapper = restWrapper;
@@ -90,7 +89,7 @@ namespace io.unlaunch.store
                 Task.Factory.StartNew(GetFlagData);
             }
         }
-        
+
         private void GetFlagData()
         {
             if (_isTaskRunning.Get())
@@ -99,7 +98,7 @@ namespace io.unlaunch.store
             }
             _isTaskRunning.Set(true);
 
-            if (!_sync0Complete.Get()) 
+            if (!_sync0Complete.Get())
             {
                 _sync0Complete.Set(true);
                 if (!Sync0())
@@ -111,7 +110,7 @@ namespace io.unlaunch.store
             {
                 RegularServerSync();
             }
-            
+
             _isTaskRunning.Set(false);
         }
 
@@ -124,9 +123,11 @@ namespace io.unlaunch.store
                 {
                     return false;
                 }
-                
-                InitFeatureStore(response);
-                
+
+                var stringResp = response.Content.ReadAsStringAsync().Result;
+                var flagData = JsonConvert.DeserializeObject<Data>(stringResp);
+                InitFeatureStore(flagData);
+
                 if (_flagMapReference.Get().Any())
                 {
                     return true;
@@ -144,14 +145,12 @@ namespace io.unlaunch.store
             return false;
         }
 
-        private void InitFeatureStore(HttpResponseMessage response)
+        private void InitFeatureStore(Data data)
         {
-            var stringResp = response.Content.ReadAsStringAsync().Result;
-            var flagResponse = JsonConvert.DeserializeObject<FlagResponse>(stringResp);
-            _projectNameRef.Set(flagResponse.data.projectName);
-            _environmentNameRef.Set(flagResponse.data.envName);
+            _projectNameRef.Set(data.projectName);
+            _environmentNameRef.Set(data.envName);
 
-            var featureFlags = FlagMapper.GetFeatureFlags(flagResponse.data.flags);
+            var featureFlags = FlagMapper.GetFeatureFlags(data.flags);
             var flagMap = featureFlags.ToDictionary(x => x.Key);
             _flagMapReference.Set(flagMap);
 
@@ -179,7 +178,9 @@ namespace io.unlaunch.store
                 }
                 else if (response.StatusCode == HttpStatusCode.OK)
                 {
-                    InitFeatureStore(response);
+                    var stringResp = response.Content.ReadAsStringAsync().Result;
+                    var flagResponse = JsonConvert.DeserializeObject<FlagResponse>(stringResp);
+                    InitFeatureStore(flagResponse.data);
                 }
                 else if (response.StatusCode == HttpStatusCode.Forbidden)
                 {
