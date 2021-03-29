@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -19,38 +18,46 @@ namespace io.unlaunch.store
         private static readonly IUnlaunchLogger Logger = LoggerProvider.For<UnlaunchHttpDataStore>();
 
         private readonly UnlaunchRestWrapper _restWrapper;
+        private readonly UnlaunchGenericRestWrapper _s3BucketClient;
         private readonly CountdownEvent _initialDownloadDoneEvent;
         private readonly AtomicBoolean _downloadSuccessful;
-        private readonly IDictionary<string, FeatureFlag> _flagMap;
-        private readonly AtomicReference<string> _projectNameRef = new AtomicReference<string>();
-        private readonly AtomicReference<string> _environmentNameRef = new AtomicReference<string>();
+        private readonly AtomicReference<IDictionary<string, FeatureFlag>> _flagMapReference;
+        private readonly AtomicReference<string> _projectNameRef = new AtomicReference<string>(string.Empty);
+        private readonly AtomicReference<string> _environmentNameRef = new AtomicReference<string>(string.Empty);
         private readonly AtomicBoolean _isTaskRunning = new AtomicBoolean(false);
+        private readonly AtomicBoolean _sync0Complete = new AtomicBoolean(false);
         private readonly AtomicLong _numHttpCalls = new AtomicLong(0);
         private readonly Timer _timer;
 
-        public UnlaunchHttpDataStore(UnlaunchRestWrapper restWrapper, CountdownEvent intInitialDownloadDoneEvent, AtomicBoolean downloadSuccessful, TimeSpan dataStoreRefreshDelay)
+        public UnlaunchHttpDataStore(
+            UnlaunchRestWrapper restWrapper,
+            UnlaunchGenericRestWrapper s3BucketClient,
+            CountdownEvent intInitialDownloadDoneEvent,
+            AtomicBoolean downloadSuccessful,
+            TimeSpan dataStoreRefreshDelay)
         {
             _restWrapper = restWrapper;
+            _s3BucketClient = s3BucketClient;
             _initialDownloadDoneEvent = intInitialDownloadDoneEvent;
             _downloadSuccessful = downloadSuccessful;
-            _flagMap = new ConcurrentDictionary<string, FeatureFlag>();
+            _flagMapReference = new AtomicReference<IDictionary<string, FeatureFlag>>(new Dictionary<string, FeatureFlag>());
 
             _timer = new Timer((e) => { CreateTask(); }, null, TimeSpan.Zero, dataStoreRefreshDelay);
         }
 
         public FeatureFlag GetFlag(string flagKey)
         {
-            return _flagMap.ContainsKey(flagKey) ? _flagMap[flagKey] : null;
+            return _flagMapReference.Get().ContainsKey(flagKey) ? _flagMapReference.Get()[flagKey] : null;
         }
 
         public IEnumerable<FeatureFlag> GetAllFlags()
         {
-            return _flagMap.Values.ToList();
+            return _flagMapReference.Get().Values.ToList();
         }
 
         public bool IsFlagExist(string flagKey)
         {
-            return _flagMap.ContainsKey(flagKey);
+            return _flagMapReference.Get().ContainsKey(flagKey);
         }
 
         public string GetProjectName()
@@ -71,7 +78,7 @@ namespace io.unlaunch.store
         public void Dispose()
         {
             _timer?.Dispose();
-            _flagMap?.Clear();
+            _flagMapReference.Set(new Dictionary<string, FeatureFlag>());
             _isTaskRunning.Set(true);
         }
 
@@ -82,18 +89,85 @@ namespace io.unlaunch.store
                 Task.Factory.StartNew(GetFlagData);
             }
         }
-        
+
         private void GetFlagData()
         {
             if (_isTaskRunning.Get())
             {
                 return;
             }
-            
             _isTaskRunning.Set(true);
-            
+
+            if (!_sync0Complete.Get())
+            {
+                _sync0Complete.Set(true);
+                if (!Sync0())
+                {
+                    RegularServerSync();
+                }
+            }
+            else
+            {
+                RegularServerSync();
+            }
+
+            _isTaskRunning.Set(false);
+        }
+
+        private bool Sync0()
+        {
+            try
+            {
+                var response = _s3BucketClient.GetAsync().GetAwaiter().GetResult();
+                if (response.StatusCode != HttpStatusCode.OK)
+                {
+                    return false;
+                }
+
+                var stringResp = response.Content.ReadAsStringAsync().Result;
+                var flagData = JsonConvert.DeserializeObject<Data>(stringResp);
+                InitFeatureStore(flagData);
+
+                if (_flagMapReference.Get().Any())
+                {
+                    return true;
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.Warn("an error occurred when fetching flags from S3", e);
+            }
+            finally
+            {
+                _s3BucketClient.Dispose();
+            }
+
+            return false;
+        }
+
+        private void InitFeatureStore(Data data)
+        {
+            _projectNameRef.Set(data.projectName);
+            _environmentNameRef.Set(data.envName);
+
+            var featureFlags = FlagMapper.GetFeatureFlags(data.flags);
+            var flagMap = featureFlags.ToDictionary(x => x.Key);
+            _flagMapReference.Set(flagMap);
+
+            if (!_downloadSuccessful.Get())
+            {
+                _downloadSuccessful.Set(true);
+            }
+
+            if (!_initialDownloadDoneEvent.IsSet)
+            {
+                _initialDownloadDoneEvent.Signal();
+            }
+        }
+
+        private void RegularServerSync()
+        {
             _numHttpCalls.IncrementAndGet();
-            var fetchedSuccessfully = false;
 
             try
             {
@@ -106,23 +180,7 @@ namespace io.unlaunch.store
                 {
                     var stringResp = response.Content.ReadAsStringAsync().Result;
                     var flagResponse = JsonConvert.DeserializeObject<FlagResponse>(stringResp);
-                    _projectNameRef.Set(flagResponse.data.projectName);
-                    _environmentNameRef.Set(flagResponse.data.envName);
-
-                    var featureFlags = FlagMapper.GetFeatureFlags(flagResponse.data.flags);
-                    foreach (var featureFlag in featureFlags)
-                    {
-                        if (_flagMap.ContainsKey(featureFlag.Key))
-                        {
-                            _flagMap[featureFlag.Key] = featureFlag;
-                        }
-                        else
-                        {
-                            _flagMap.Add(featureFlag.Key, featureFlag);
-                        }
-                    }
-
-                    fetchedSuccessfully = true;
+                    InitFeatureStore(flagResponse.data);
                 }
                 else if (response.StatusCode == HttpStatusCode.Forbidden)
                 {
@@ -145,18 +203,6 @@ namespace io.unlaunch.store
             {
                 Logger.Warn("an error occurred when fetching flags using the REST API", e);
             }
-
-            if (fetchedSuccessfully && !_downloadSuccessful.Get())
-            {
-                _downloadSuccessful.Set(true);
-            }
-
-            if (fetchedSuccessfully && !_initialDownloadDoneEvent.IsSet)
-            {
-                _initialDownloadDoneEvent.Signal();
-            }
-
-            _isTaskRunning.Set(false);
         }
     }
 }

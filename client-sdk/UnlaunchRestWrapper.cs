@@ -66,7 +66,7 @@ namespace io.unlaunch
             _httpClient?.Dispose();
         }
 
-        private void SetupHttpClient(string sdkKey, HttpClient httpClient, string baseUrl, TimeSpan connectionTimeOut)
+        private static void SetupHttpClient(string sdkKey, HttpClient httpClient, string baseUrl, TimeSpan connectionTimeOut)
         {
             if (httpClient == null)
             {
