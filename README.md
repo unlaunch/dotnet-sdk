@@ -1,12 +1,11 @@
-# Unlaunch .Net SDK
+# Unlaunch .NET SDK
 
 ## Overview
-The .Net SDK provides .Net Framework or .Net Core API to access Unlaunch feature flags and other features. Using the SDK, you can
- easily build .Net applications that can evaluate feature flags, dynamic configurations, and more.
+The .Net SDK provides .NET Framework or .NET Core API to access Unlaunch feature flags and other features. Using the SDK, you can easily build .NET applications that can evaluate feature flags, dynamic configurations, and more.
 
 ### Important Links
 
-- To create feature flags to use with Java SDK, login to your Unlaunch Console at [https://app.unlaunch.io](https://app.unlaunch.io)
+- To create feature flags to use with .NET SDK, login to your Unlaunch Console at [https://app.unlaunch.io](https://app.unlaunch.io)
 - [Official Guide](https://github.com/unlaunch/dotnet-sdk)
 - [Nuget](https://www.nuget.org/packages/unlaunch)
 
@@ -16,9 +15,9 @@ The .Net SDK provides .Net Framework or .Net Core API to access Unlaunch feature
 ## Getting Started
 Here is a simple example. 
 
-Here's how you'd use the .Net SDK in your application.
+Here's how you'd use the .NET SDK in your application.
 
-```
+```csharp
 using System;
 using io.unlaunch;
 
@@ -70,7 +69,8 @@ namespace your.namespace
 ```
 
 ### Singleton in web application
-```
+
+```csharp
 var unlaunchClient = UnlaunchClient.Create("INSERT_YOUR_SDK_KEY");
 builder.Register(c => unlaunchClient).As<IUnlaunchClient>().SingleInstance();
 ```            
@@ -79,7 +79,7 @@ builder.Register(c => unlaunchClient).As<IUnlaunchClient>().SingleInstance();
 
 You can use builder to customize the client. For more information, see the [official guide](https://docs.unlaunch.io/docs/sdks/dotnet-sdk).
 
-```
+```csharp
 var client = UnlaunchClient.Builder()
                 .SdkKey("INSERT_YOUR_SDK_KEY")
                 .PollingIntervalInSeconds(60)
