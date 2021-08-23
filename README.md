@@ -1,17 +1,20 @@
-# Unlaunch .Net SDK
+# Unlaunch .NET SDK
+
+| main                                                                                                                | development                                                                                                                |
+|---------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------|
+| [![Build Status](https://app.travis-ci.com/unlaunch/dotnet-sdk.svg?branch=master)](https://app.travis-ci.com/unlaunch/dotnet-sdk) | [![Build Status](https://app.travis-ci.com/unlaunch/dotnet-sdk.svg?branch=develop)](https://app.travis-ci.com/unlaunch/dotnet-sdk) |
 
 ## Overview
-The .Net SDK provides .Net Framework or .Net Core API to access Unlaunch feature flags and other features. Using the SDK, you can
- easily build .Net applications that can evaluate feature flags, dynamic configurations, and more.
+The Unlaunch .NET SDK provides .NET Framework or .NET Core API to access Unlaunch feature flags and other features. Using the SDK, you can easily build .NET applications that can evaluate feature flags, dynamic configurations, and more.
 
 ### Important Links
 
-- To create feature flags to use with Java SDK, login to your Unlaunch Console at [https://app.unlaunch.io](https://app.unlaunch.io)
-- [Official Guide](https://github.com/unlaunch/dotnet-sdk)
+- To create feature flags to use with .NET SDK, login to your Unlaunch Console at [https://app.unlaunch.io](https://app.unlaunch.io)
+- [Official Guide](https://docs.unlaunch.io/docs/sdks/dotnet-sdk)
 - [Nuget](https://www.nuget.org/packages/unlaunch)
 
 ### Compatibility
-.Net Framework 4.5+ and .Net Core 2.0+
+.NET Framework 4.5+ and .NET Core 2.0+
 
 ### This is a server-side SDK
 This SDK is server-side and should be used in applications that you run on your own servers such as backend
@@ -20,9 +23,15 @@ This SDK is server-side and should be used in applications that you run on your 
 ## Getting Started
 Here is a simple example. 
 
-Here's how you'd use the .Net SDK in your application.
+First import the SDK using Nuget. 
 
 ```
+Install-Package unlaunch -Version 1.0.0
+```
+
+Here's an example showing how you'd use Unlaunch .NET SDK in your application.
+
+```csharp
 using System;
 using io.unlaunch;
 
@@ -74,7 +83,8 @@ namespace your.namespace
 ```
 
 ### Singleton in web application
-```
+
+```csharp
 var unlaunchClient = UnlaunchClient.Create("INSERT_YOUR_SDK_KEY");
 builder.Register(c => unlaunchClient).As<IUnlaunchClient>().SingleInstance();
 ```            
@@ -83,7 +93,7 @@ builder.Register(c => unlaunchClient).As<IUnlaunchClient>().SingleInstance();
 
 You can use builder to customize the client. For more information, see the [official guide](https://docs.unlaunch.io/docs/sdks/dotnet-sdk).
 
-```
+```csharp
 var client = UnlaunchClient.Builder()
                 .SdkKey("INSERT_YOUR_SDK_KEY")
                 .PollingIntervalInSeconds(TimeSpan.FromSeconds(60))
