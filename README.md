@@ -1,21 +1,31 @@
 # Unlaunch .NET SDK
 
+| main                                                                                                                | development                                                                                                                |
+|---------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------|
+| [![Build Status](https://app.travis-ci.com/unlaunch/dotnet-sdk.svg?branch=master)](https://app.travis-ci.com/unlaunch/dotnet-sdk) | [![Build Status](https://app.travis-ci.com/unlaunch/dotnet-sdk.svg?branch=develop)](https://app.travis-ci.com/unlaunch/dotnet-sdk) |
+
 ## Overview
-The .Net SDK provides .NET Framework or .NET Core API to access Unlaunch feature flags and other features. Using the SDK, you can easily build .NET applications that can evaluate feature flags, dynamic configurations, and more.
+The Unlaunch .NET SDK provides .NET Framework or .NET Core API to access Unlaunch feature flags and other features. Using the SDK, you can easily build .NET applications that can evaluate feature flags, dynamic configurations, and more.
 
 ### Important Links
 
 - To create feature flags to use with .NET SDK, login to your Unlaunch Console at [https://app.unlaunch.io](https://app.unlaunch.io)
-- [Official Guide](https://github.com/unlaunch/dotnet-sdk)
+- [Official Guide](https://docs.unlaunch.io/docs/sdks/dotnet-sdk)
 - [Nuget](https://www.nuget.org/packages/unlaunch)
 
 ### Compatibility
-.Net Framework 4.5+ and .Net Core 2.0+
+.NET Framework 4.5+ and .NET Core 2.0+
 
 ## Getting Started
 Here is a simple example. 
 
-Here's how you'd use the .NET SDK in your application.
+First import the SDK using Nuget. 
+
+```
+Install-Package unlaunch -Version 1.0.0
+```
+
+Here's an example showing how you'd use Unlaunch .NET SDK in your application.
 
 ```csharp
 using System;
